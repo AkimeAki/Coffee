@@ -43,6 +43,14 @@ const posts = await getListContents<Blog>("blogs");
 		column-gap: 30px;
 		row-gap: 40px;
 
+		@media screen and (max-width: 700px) {
+			grid-template-columns: 1fr 1fr;
+		}
+
+		@media screen and (max-width: 520px) {
+			grid-template-columns: 1fr;
+		}
+
 		.post-card {
 			position: relative;
 			display: flex;
