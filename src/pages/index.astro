@@ -1,0 +1,72 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { formatDate } from "@/lib/format-date";
+import { getListContents } from "@/lib/microcms";
+import type { Blog } from "@/lib/microcms";
+
+const posts = await getListContents<Blog>("blogs");
+---
+
+<Layout>
+	<main id="main">
+		{
+			posts.contents.map((post) => (
+				<div class="post-card">
+					<div class="post-content" set:html={post.contents} />
+					<div>
+						<h2 class="post-title">{post.title}</h2>
+						<time class="post-date" datetime={post.publishedAt ?? post.createdAt}>
+							{formatDate(post.publishedAt ?? post.createdAt)}
+						</time>
+					</div>
+					<a class="post-link" href={`/${post.id}`} aria-label={`記事『${post.title}』を読む`} />
+				</div>
+			))
+		}
+	</main>
+</Layout>
+
+<style lang="scss">
+	#main {
+		padding: 0 20px;
+		width: 100%;
+		max-width: 814px;
+		margin: 0 auto;
+		padding: 25px;
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		column-gap: 30px;
+		row-gap: 40px;
+
+		.post-card {
+			position: relative;
+			display: flex;
+			flex-direction: column;
+			gap: 15px;
+
+			.post-content {
+				background-color: #fff1ea;
+				padding: 30px;
+				border-radius: 30px;
+				height: 150px;
+				overflow: hidden;
+
+				:global(p) {
+					font-size: 5px;
+				}
+			}
+
+			.post-date {
+				font-size: 15px;
+			}
+
+			.post-link {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+			}
+		}
+	}
+</style>
