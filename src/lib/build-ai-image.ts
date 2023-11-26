@@ -24,7 +24,7 @@ export default function (): AstroIntegration {
 	return {
 		name: "ai-image",
 		hooks: {
-			"astro:build:done": async ({ logger }) => {
+			"astro:build:start": async ({ logger }) => {
 				logger.info("Ai画像未生成の記事を検索中");
 				try {
 					const r2Data = await S3.send(new ListObjectsV2Command({ Bucket: "coffee" }));
@@ -66,7 +66,7 @@ export default function (): AstroIntegration {
 
 							const blogContent = $.text();
 
-							const prompt = `Extract some keywords from the following text and generate images without including text according to the keywords. The atmosphere of the image should be in the style of a real-life photograph.\n\n"${blogContent}"`;
+							const prompt = `Extract some keywords from the following text and generate images without including text according to the keywords. The atmosphere of the image should be in the style of a real-life photograph.If the image would be blocked by the safety system, generate it with something that will not be blocked.\n\n"${blogContent}"`;
 
 							const imageResponse = await openai.images.generate({
 								model: "dall-e-3",
@@ -102,6 +102,7 @@ export default function (): AstroIntegration {
 				} catch (e) {
 					logger.error(String(e));
 					logger.info("エラーが発生しました。");
+					process.exit(1);
 				}
 			}
 		}
