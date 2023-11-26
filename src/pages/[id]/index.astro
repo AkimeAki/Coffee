@@ -2,6 +2,7 @@
 import Layout from "@/layouts/Layout.astro";
 import { formatDate } from "@/lib/format-date";
 import { getContentsDetail, getListContents } from "@/lib/microcms";
+import cheerio from "cheerio";
 import type { Blog } from "@/lib/microcms";
 
 interface pathType {
@@ -25,9 +26,12 @@ if (id === undefined) {
 }
 
 const blog = await getContentsDetail<Blog>("blogs", id);
+
+const $ = cheerio.load(blog.contents);
+const description = $.text();
 ---
 
-<Layout title={blog.title}>
+<Layout title={blog.title} description={description}>
 	<main id="main">
 		<time class="post-date" datetime={blog.publishedAt ?? blog.createdAt}>
 			{formatDate(blog.publishedAt ?? blog.createdAt)}
@@ -35,9 +39,44 @@ const blog = await getContentsDetail<Blog>("blogs", id);
 		<h2 class="post-title">{blog.title}</h2>
 		<div class="post-content" set:html={blog.contents} />
 	</main>
+	<div id="bg-image-wrapper">
+		<img id="bg-image" src={`https://r2.aki.coffee/${blog.id}.png`} />
+	</div>
 </Layout>
 
 <style lang="scss">
+	html,
+	body {
+		width: 100%;
+		height: 100%;
+	}
+
+	body {
+		position: relative;
+	}
+
+	:global(#title) {
+		color: white;
+	}
+
+	#bg-image-wrapper {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		z-index: -1;
+		overflow: hidden;
+
+		#bg-image {
+			object-fit: cover;
+			width: 100%;
+			height: 100%;
+			transform: scale(1.1);
+			filter: blur(7px) brightness(45%);
+		}
+	}
+
 	#main {
 		padding: 0 20px;
 		width: 100%;
@@ -48,12 +87,14 @@ const blog = await getContentsDetail<Blog>("blogs", id);
 		.post-title {
 			font-size: 18px;
 			margin-bottom: 50px;
+			color: white;
 		}
 
 		.post-content {
 			:global(p) {
 				margin-bottom: 35px;
 				font-size: 16px;
+				color: white;
 
 				&:last-child {
 					margin-bottom: 0;
@@ -66,6 +107,7 @@ const blog = await getContentsDetail<Blog>("blogs", id);
 			margin-bottom: 40px;
 			display: block;
 			text-align: right;
+			color: white;
 		}
 
 		.post-link {

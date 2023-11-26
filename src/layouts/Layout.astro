@@ -3,11 +3,13 @@ import { ViewTransitions } from "astro:transitions";
 
 interface Props {
 	title?: string | undefined;
+	description?: string | undefined;
 }
 
-const { title } = Astro.props;
-const serviceTitle = "彩季のBlogです。";
+const { title, description } = Astro.props;
+const serviceTitle = "Aki Coffee☕";
 const pageTitle = title === undefined ? serviceTitle : `${title} | ${serviceTitle}`;
+const pageDescription = description ?? "Akiです。のんびり日記書いてます。";
 
 const path = Astro.url.pathname.replace(/^\//, "").replace(/\.html$/, "");
 ---
@@ -17,7 +19,7 @@ const path = Astro.url.pathname.replace(/^\//, "").replace(/\.html$/, "");
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<meta name="description" content="Akiです。のんびり日記書いてます。" />
+		<meta name="description" content={pageDescription} />
 		<meta name="format-detection" content="email=no,telephone=no,address=no" />
 		<meta name="author" content="Aki" />
 		<link rel="canonical" href={`https://aki.coffee/${path}`} />
