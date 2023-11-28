@@ -224,8 +224,6 @@ const description = $.text();
 	);
 	resizeCurl();
 
-	curlView();
-
 	const curlToggle = () => {
 		const curl = document.querySelector<HTMLElement>("#curl");
 		const curlImage = document.querySelector<HTMLElement>("#curl-image");
@@ -258,10 +256,11 @@ const description = $.text();
 		"astro:after-swap",
 		() => {
 			curlToggle();
+			curlView();
 		},
 		false
 	);
 
-	scroll();
 	curlToggle();
+	curlView();
 </script>
