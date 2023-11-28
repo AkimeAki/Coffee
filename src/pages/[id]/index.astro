@@ -177,9 +177,27 @@ const description = $.text();
 </style>
 
 <script>
-	let size = 0;
+	const curlView = () => {
+		const wrapper = document.querySelector<HTMLElement>("#wrapper");
+		const curl = document.querySelector<HTMLElement>("#curl");
+		const curlImage = document.querySelector<HTMLElement>("#curl-image");
+		if (wrapper !== null && curl !== null && curlImage !== null) {
+			curl.style.bottom = -1 * wrapper.scrollTop + "px";
+			curlImage.style.bottom = -1 * wrapper.scrollTop + "px";
 
-	const resize = () => {
+			const scrollBottom = wrapper.scrollHeight - wrapper.offsetHeight - wrapper.scrollTop;
+			if (scrollBottom < 10) {
+				curl.dataset.view = "true";
+				curlImage.dataset.view = "true";
+			} else {
+				curl.dataset.view = "false";
+				curlImage.dataset.view = "false";
+			}
+		}
+	};
+
+	let size = 0;
+	const resizeCurl = () => {
 		const curl = document.querySelector<HTMLElement>("#curl");
 		const curlImage = document.querySelector<HTMLElement>("#curl-image");
 
@@ -196,10 +214,19 @@ const description = $.text();
 		}
 	};
 
-	window.addEventListener("resize", resize, false);
-	resize();
+	window.addEventListener(
+		"resize",
+		() => {
+			resizeCurl();
+			curlView();
+		},
+		false
+	);
+	resizeCurl();
 
-	const curlFunc = () => {
+	curlView();
+
+	const curlToggle = () => {
 		const curl = document.querySelector<HTMLElement>("#curl");
 		const curlImage = document.querySelector<HTMLElement>("#curl-image");
 		const wrapper = document.querySelector<HTMLElement>("#wrapper");
@@ -223,29 +250,18 @@ const description = $.text();
 				}
 			});
 
-			const scroll = () => {
-				const curl = document.querySelector<HTMLElement>("#curl");
-				const curlImage = document.querySelector<HTMLElement>("#curl-image");
-				if (curl !== null && curlImage !== null) {
-					curl.style.bottom = -1 * wrapper.scrollTop + "px";
-					curlImage.style.bottom = -1 * wrapper.scrollTop + "px";
-
-					const scrollBottom = wrapper.scrollHeight - wrapper.offsetHeight - wrapper.scrollTop;
-					if (scrollBottom < 10) {
-						curl.dataset.view = "true";
-						curlImage.dataset.view = "true";
-					} else {
-						curl.dataset.view = "false";
-						curlImage.dataset.view = "false";
-					}
-				}
-			};
-
-			wrapper.addEventListener("scroll", scroll);
-			scroll();
+			wrapper.addEventListener("scroll", curlView);
 		}
 	};
 
-	document.addEventListener("astro:after-swap", curlFunc);
-	curlFunc();
+	document.addEventListener(
+		"astro:after-swap",
+		() => {
+			curlToggle();
+		},
+		false
+	);
+
+	scroll();
+	curlToggle();
 </script>
