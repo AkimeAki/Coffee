@@ -53,9 +53,7 @@ const path = Astro.url.pathname.replace(/^\//, "").replace(/\.html$/, "");
 			<header>
 				<a id="title-link" href="/"><h1 id="title">Aki ☕</h1></a>
 			</header>
-			<main>
-				<slot />
-			</main>
+			<slot />
 		</div>
 		<style is:global>
 			@font-face {
@@ -119,11 +117,6 @@ const path = Astro.url.pathname.replace(/^\//, "").replace(/\.html$/, "");
 
 			p:last-of-type {
 				margin-bottom: 0;
-			}
-
-			img {
-				max-width: 100%;
-				height: auto;
 			}
 		</style>
 

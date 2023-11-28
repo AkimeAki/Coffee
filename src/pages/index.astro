@@ -8,7 +8,7 @@ const posts = await getListContents<Blog>("blogs");
 ---
 
 <Layout>
-	<main id="main">
+	<main id="card-wrapper">
 		{
 			posts.contents.map((post) => (
 				<a class="post-card" href={`/${post.id}`} aria-label={`記事『${post.title}』を読む`}>
@@ -32,7 +32,7 @@ const posts = await getListContents<Blog>("blogs");
 </Layout>
 
 <style lang="scss">
-	#main {
+	#card-wrapper {
 		width: 100%;
 		max-width: 814px;
 		margin: 0 auto;

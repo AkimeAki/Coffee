@@ -32,7 +32,7 @@ const description = $.text();
 ---
 
 <Layout title={blog.title} description={description}>
-	<main id="main">
+	<main id="post-wrapper">
 		<time class="post-date" datetime={blog.publishedAt ?? blog.createdAt}>
 			{formatDate(blog.publishedAt ?? blog.createdAt)}
 		</time>
@@ -42,15 +42,19 @@ const description = $.text();
 	<div id="bg-image-wrapper">
 		<img id="bg-image" src={`https://r2.aki.coffee/${blog.id}.png`} />
 	</div>
+	<div id="curl" data-status="close" data-view="false"></div>
+	<div id="curl-image" data-view="false">
+		<img src={`https://r2.aki.coffee/${blog.id}.png`} alt="" />
+	</div>
 </Layout>
 
 <style lang="scss">
-	:global(#wrapper) {
-		position: relative;
-	}
-
 	:global(#title) {
 		color: white;
+	}
+
+	:global(#wrapper) {
+		position: relative;
 	}
 
 	#bg-image-wrapper {
@@ -71,7 +75,7 @@ const description = $.text();
 		}
 	}
 
-	#main {
+	#post-wrapper {
 		width: 100%;
 		max-width: 660px;
 		margin: 0 auto;
@@ -104,11 +108,144 @@ const description = $.text();
 		}
 
 		.post-link {
-			position: absolute;
+			position: fixed;
 			top: 0;
 			left: 0;
 			width: 100%;
 			height: 100%;
 		}
 	}
+
+	#curl {
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		width: 0;
+		height: 0;
+		cursor: pointer;
+		background: linear-gradient(
+			315deg,
+			transparent,
+			transparent 45%,
+			transparent 50%,
+			#aaa 50%,
+			#bbb 56%,
+			#ccc 62%,
+			#f3f3f3 80%,
+			#fff 100%
+		);
+		transition-duration: 500ms;
+		transition-timing-function: ease-in-out;
+		transition-property: width, height;
+		z-index: 2;
+
+		&[data-view="true"] {
+			width: 50px;
+			height: 50px;
+		}
+	}
+
+	#curl-image {
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		width: 0;
+		height: 0;
+		max-width: 100%;
+		max-height: 100svh;
+		transition-duration: 500ms;
+		transition-timing-function: ease-in-out;
+		transition-property: width, height;
+		z-index: 1;
+		overflow: hidden;
+
+		&[data-view="true"] {
+			width: 50px;
+			height: 50px;
+		}
+
+		img {
+			position: absolute;
+			bottom: 0;
+			right: 0;
+			width: 100svw;
+			height: 100svh;
+			object-fit: cover;
+			transform: scale(1.1);
+		}
+	}
 </style>
+
+<script>
+	let size = 0;
+
+	const resize = () => {
+		const curl = document.querySelector<HTMLElement>("#curl");
+		const curlImage = document.querySelector<HTMLElement>("#curl-image");
+
+		if (curl !== null && curlImage !== null) {
+			size = Math.max(window.innerWidth, window.innerHeight) * 2;
+
+			if (curl.dataset.status === "open") {
+				curl.style.width = size + "px";
+				curl.style.height = size + "px";
+
+				curlImage.style.width = size + "px";
+				curlImage.style.height = size + "px";
+			}
+		}
+	};
+
+	window.addEventListener("resize", resize, false);
+	resize();
+
+	const curlFunc = () => {
+		const curl = document.querySelector<HTMLElement>("#curl");
+		const curlImage = document.querySelector<HTMLElement>("#curl-image");
+		const wrapper = document.querySelector<HTMLElement>("#wrapper");
+
+		if (wrapper !== null && curl !== null && curlImage !== null) {
+			curl.addEventListener("click", () => {
+				if (curl.dataset.status === "close") {
+					curl.dataset.status = "open";
+
+					curl.style.width = size + "px";
+					curl.style.height = size + "px";
+					curlImage.style.width = size + "px";
+					curlImage.style.height = size + "px";
+				} else {
+					curl.dataset.status = "close";
+
+					curl.style.width = "";
+					curl.style.height = "";
+					curlImage.style.width = "";
+					curlImage.style.height = "";
+				}
+			});
+
+			const scroll = () => {
+				const curl = document.querySelector<HTMLElement>("#curl");
+				const curlImage = document.querySelector<HTMLElement>("#curl-image");
+				if (curl !== null && curlImage !== null) {
+					curl.style.bottom = -1 * wrapper.scrollTop + "px";
+					curlImage.style.bottom = -1 * wrapper.scrollTop + "px";
+
+					const scrollBottom = wrapper.scrollHeight - wrapper.offsetHeight - wrapper.scrollTop;
+					if (scrollBottom < 10) {
+						curl.dataset.view = "true";
+						curlImage.dataset.view = "true";
+					} else {
+						curl.dataset.view = "false";
+						curlImage.dataset.view = "false";
+					}
+				}
+			};
+
+			wrapper.addEventListener("scroll", scroll);
+			scroll();
+		}
+	};
+
+	document.addEventListener("astro:after-swap", curlFunc);
+	curlFunc();
+</script>
