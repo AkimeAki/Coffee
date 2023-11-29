@@ -7,7 +7,7 @@ import type { Blog } from "@/lib/microcms";
 const posts = await getListContents<Blog>("blogs");
 ---
 
-<Layout>
+<Layout ogType="blog">
 	<main id="card-wrapper">
 		{
 			posts.contents.map((post) => (

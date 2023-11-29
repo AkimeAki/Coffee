@@ -31,7 +31,12 @@ const $ = cheerio.load(blog.contents);
 const description = $.text();
 ---
 
-<Layout title={blog.title} description={description}>
+<Layout
+	title={blog.title}
+	description={`${description.substring(0, 80)}...`}
+	ogImage={`https://r2.coffee.aki.wtf/${blog.id}.png`}
+	ogType="article"
+>
 	<main id="post-wrapper">
 		<time class="post-date" datetime={blog.publishedAt ?? blog.createdAt}>
 			{formatDate(blog.publishedAt ?? blog.createdAt)}
