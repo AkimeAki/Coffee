@@ -28,12 +28,12 @@ if (id === undefined) {
 const blog = await getContentsDetail<Blog>("blogs", id);
 
 const $ = cheerio.load(blog.contents);
-const description = $.text();
+const description = $.text().match(/[^。]+/) !== null ? $.text().match(/[^。]+/) + "。" : undefined;
 ---
 
 <Layout
 	title={blog.title}
-	description={`${description.substring(0, 80)}...`}
+	description={`${description}`}
 	ogImage={`https://r2.coffee.aki.wtf/${blog.id}.png`}
 	ogType="article"
 >
