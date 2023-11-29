@@ -36,7 +36,7 @@ const path = Astro.url.pathname.replace(/^\//, "").replace(/\.html$/, "");
 		<meta name="author" content="彩季" />
 		<meta property="og:url" content={`https://coffee.aki.wtf/${path}`} />
 		<meta property="og:type" content={ogType} />
-		<meta property="og:title" content={pageTitle} />
+		<meta property="og:title" content={title ?? serviceTitle} />
 		<meta property="og:description" content={pageDescription} />
 		<meta property="og:site_name" content="Aki Coffee" />
 		<meta property="og:image" content={ogImage} />
