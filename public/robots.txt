@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /*/
 Disallow: /*.html
-Sitemap: https://aki.coffee/sitemap-index.xml
+Sitemap: https://coffee.aki.wtf/sitemap-index.xml
