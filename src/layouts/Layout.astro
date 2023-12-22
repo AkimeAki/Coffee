@@ -64,6 +64,7 @@ const path = Astro.url.pathname.replace(/^\//, "").replace(/\.html$/, "");
 			<header>
 				<a id="title-link" href="/"><h1 id="title">Aki ☕</h1></a>
 			</header>
+			<p id="description">AIが背景画像を生成するブログ</p>
 			<slot />
 		</div>
 		<style is:global>
@@ -132,6 +133,11 @@ const path = Astro.url.pathname.replace(/^\//, "").replace(/\.html$/, "");
 		</style>
 
 		<style lang="scss">
+			#description {
+				text-align: center;
+				margin-top: 10px;
+			}
+
 			header {
 				padding: 40px 0 0 0;
 				max-width: 1200px;
