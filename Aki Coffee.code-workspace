@@ -44,6 +44,11 @@
 		"[css]": {
 			"editor.formatOnSave": true,
 			"editor.defaultFormatter": "esbenp.prettier-vscode"
+		},
+		"files.readonlyInclude": {
+			"node_modules/**/*": true,
+			".git/**/*": true,
+			"dist/**/*": true
 		}
 	},
 	"extensions": {

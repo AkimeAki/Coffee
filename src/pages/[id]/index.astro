@@ -64,6 +64,12 @@ const description = $.text().match(/[^。]+/) !== null ? $.text().match(/[^。]+
 
 	:global(#wrapper) {
 		position: relative;
+
+		:global(#sns-link) {
+			:global(a) {
+				background-color: white !important;
+			}
+		}
 	}
 
 	#bg-image-wrapper {

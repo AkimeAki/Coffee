@@ -61,6 +61,11 @@ const path = Astro.url.pathname.replace(/^\//, "").replace(/\.html$/, "");
 		<!-- End Google Tag Manager (noscript) -->
 
 		<div id="wrapper">
+			<div id="sns-link">
+				<a class="twitter-link" href="https://twitter.com/Akime_Aki" target="_blank"></a>
+				<a class="x-link" href="https://x.com/Akime_Aki" target="_blank"></a>
+				<a class="github-link" href="https://github.com/AkimeAki/Coffee" target="_blank"></a>
+			</div>
 			<header>
 				<a id="title-link" href="/"><h1 id="title">Aki ☕</h1></a>
 			</header>
@@ -133,6 +138,45 @@ const path = Astro.url.pathname.replace(/^\//, "").replace(/\.html$/, "");
 		</style>
 
 		<style lang="scss">
+			#wrapper {
+				position: relative;
+
+				#sns-link {
+					position: absolute;
+					top: 20px;
+					right: 20px;
+					display: flex;
+					gap: 20px;
+
+					a {
+						display: block;
+						width: 30px;
+						aspect-ratio: 1/1;
+						mask-repeat: no-repeat;
+						mask-position: center center;
+						mask-size: contain;
+					}
+
+					.twitter-link {
+						-webkit-mask: url("/icon/twitter.png") no-repeat center center / contain;
+						mask-image: url("/icon/twitter.png");
+						background-color: #1a90d9;
+					}
+
+					.github-link {
+						-webkit-mask: url("/icon/github.png") no-repeat center center / contain;
+						mask-image: url("/icon/github.png");
+						background-color: #1a1e22;
+					}
+
+					.x-link {
+						-webkit-mask: url("/icon/x.png") no-repeat center center / contain;
+						mask-image: url("/icon/x.png");
+						background-color: #000000;
+					}
+				}
+			}
+
 			#description {
 				text-align: center;
 				margin-top: 10px;
