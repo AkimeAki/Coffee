@@ -11,8 +11,10 @@ interface Props {
 
 const { title, description, ogType = "article", ogImage = "/default-ogp.png", notFound = false } = Astro.props;
 const serviceTitle = "Aki Coffee☕";
-const pageTitle = title === undefined ? serviceTitle : `${title} | ${serviceTitle}`;
-const pageDescription = description ?? "彩季です。のんびり日記書いてます。";
+const pageTitle = title === undefined ? serviceTitle : `${title} ｜ ${serviceTitle}`;
+const pageDescription =
+	description ??
+	"このブログは記事の内容に沿って、AIが背景画像を生成してくれます。書いてて楽しいです。Coffeeに意味はないです。";
 
 const path = Astro.url.pathname.replace(/^\//, "").replace(/\.html$/, "");
 ---
@@ -45,7 +47,7 @@ const path = Astro.url.pathname.replace(/^\//, "").replace(/\.html$/, "");
 		<meta name="twitter:site" content="@Akime_Aki" />
 		{!notFound && <link rel="canonical" href={`https://coffee.aki.wtf/${path}`} />}
 		<link rel="icon" href="/favicon.ico" />
-		<title>{pageTitle}</title>
+		<title>{pageTitle} - AIが背景画像を生成するブログ</title>
 		<link rel="sitemap" href="/sitemap-index.xml" />
 		<ViewTransitions />
 	</head>
@@ -150,7 +152,7 @@ const path = Astro.url.pathname.replace(/^\//, "").replace(/\.html$/, "");
 
 					a {
 						display: block;
-						width: 30px;
+						width: 20px;
 						aspect-ratio: 1/1;
 						mask-repeat: no-repeat;
 						mask-position: center center;
