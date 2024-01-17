@@ -37,7 +37,7 @@ const description = $.text().match(/[^。]+/) !== null ? $.text().match(/[^。]+
 	ogImage={`https://r2.coffee.aki.wtf/${blog.id}.png`}
 	ogType="article"
 >
-	<p id="supplement">（ページ右下のめくれてるとこから背景画像見れるよ）</p>
+	<p id="supplement">最後までスクロールすると、<br />ページ右下のめくれてるとこから背景画像見れるよ</p>
 	<main id="post-wrapper">
 		<time class="post-date" datetime={blog.publishedAt ?? blog.createdAt}>
 			{formatDate(blog.publishedAt ?? blog.createdAt)}
@@ -77,6 +77,13 @@ const description = $.text().match(/[^。]+/) !== null ? $.text().match(/[^。]+
 		text-align: center;
 		color: white;
 		font-size: 14px;
+
+		br {
+			display: none;
+			@media screen and (max-width: 650px) {
+				display: block;
+			}
+		}
 	}
 
 	#bg-image-wrapper {
