@@ -1,22 +1,20 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import { formatDate } from "@/lib/format-date";
-import { getListContents } from "@/lib/microcms";
+import { getListAllContents } from "@/lib/microcms";
 import type { Blog } from "@/lib/microcms";
 
-const posts = await getListContents<Blog>("blogs");
+const posts = await getListAllContents<Blog>("blogs");
 ---
 
 <Layout ogType="blog">
 	<main id="card-wrapper">
 		{
-			posts.contents.map((post) => (
+			posts.map((post) => (
 				<a class="post-card" href={`/${post.id}`} aria-label={`記事『${post.title}』を読む`}>
 					<div class="post-content-wrapper">
 						<div class="post-content-bg" />
-						<div class="post-content-bg-image">
-							<img src={`https://r2.coffee.aki.wtf/${post.id}.png`} />
-						</div>
+						<div class="post-content-bg-image-wrapper" data-id={post.id} />
 						<div class="post-content" set:html={post.contents} />
 					</div>
 					<div>
@@ -30,6 +28,36 @@ const posts = await getListContents<Blog>("blogs");
 		}
 	</main>
 </Layout>
+
+<script>
+	const loadImage = () => {
+		const postCards = document.querySelectorAll<HTMLAnchorElement>(".post-card");
+		postCards.forEach((postCard) => {
+			postCard.addEventListener("mouseover", () => {
+				const imageWrapper = postCard.querySelector<HTMLDivElement>(".post-content-bg-image-wrapper");
+
+				if (imageWrapper === null) {
+					return;
+				}
+
+				if (imageWrapper.dataset.setImage === "true") {
+					return;
+				}
+
+				imageWrapper.innerHTML = /* html */ `<img class="post-content-bg-image" src="https://r2.coffee.aki.wtf/${imageWrapper.dataset.id}.png">`;
+				imageWrapper.dataset.setImage = "true";
+			});
+		});
+	};
+
+	document.addEventListener(
+		"astro:page-load",
+		() => {
+			loadImage();
+		},
+		false
+	);
+</script>
 
 <style lang="scss">
 	#card-wrapper {
@@ -59,7 +87,7 @@ const posts = await getListContents<Blog>("blogs");
 
 			&:hover {
 				.post-content-wrapper {
-					.post-content-bg-image {
+					.post-content-bg-image-wrapper {
 						opacity: 1;
 					}
 				}
@@ -73,7 +101,7 @@ const posts = await getListContents<Blog>("blogs");
 				overflow: hidden;
 
 				.post-content-bg,
-				.post-content-bg-image {
+				.post-content-bg-image-wrapper {
 					position: absolute;
 					top: 0;
 					left: 0;
@@ -88,13 +116,13 @@ const posts = await getListContents<Blog>("blogs");
 					z-index: -2;
 				}
 
-				.post-content-bg-image {
+				.post-content-bg-image-wrapper {
 					z-index: -1;
 					opacity: 0;
 					transition-duration: 400ms;
 					transition-property: opacity;
 
-					img {
+					:global(.post-content-bg-image) {
 						width: 100%;
 						height: 100%;
 						object-fit: cover;

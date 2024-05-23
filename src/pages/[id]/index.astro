@@ -1,21 +1,28 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import { formatDate } from "@/lib/format-date";
-import { getContentsDetail, getListContents } from "@/lib/microcms";
+import { getListAllContents } from "@/lib/microcms";
 import cheerio from "cheerio";
 import type { Blog } from "@/lib/microcms";
+import type { MicroCMSContentId, MicroCMSDate } from "microcms-js-sdk";
 
 interface pathType {
 	params: {
 		id: string;
 	};
+	props: {
+		blog: Blog & MicroCMSContentId & MicroCMSDate;
+	};
 }
 
 export const getStaticPaths = async (): Promise<pathType[]> => {
-	const response = await getListContents<Blog>("blogs", { fields: ["id"] });
-	return response.contents.map((content) => ({
+	const response = await getListAllContents<Blog>("blogs");
+	return response.map((content) => ({
 		params: {
 			id: content.id
+		},
+		props: {
+			blog: content
 		}
 	}));
 };
@@ -25,7 +32,7 @@ if (id === undefined) {
 	return;
 }
 
-const blog = await getContentsDetail<Blog>("blogs", id);
+const { blog } = Astro.props;
 
 const $ = cheerio.load(blog.contents);
 const description = $.text().match(/[^。]+/) !== null ? $.text().match(/[^。]+/) + "。" : undefined;

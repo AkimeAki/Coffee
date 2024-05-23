@@ -19,31 +19,16 @@ export const getListContents = async <T>(
 	apiName: string,
 	queries: MicroCMSQueries = {}
 ): Promise<MicroCMSListResponse<T>> => {
-	const response: MicroCMSListResponse<T> = { contents: [], totalCount: 0, limit: 0, offset: 0 };
-	const limit = queries.limit;
+	const response = await client.get<MicroCMSListResponse<T>>({ endpoint: apiName, queries });
+	return nullToUndefined<MicroCMSListResponse<T>>(response);
+};
 
-	const get = async (offset: number): Promise<void> => {
-		queries.offset = offset;
-		if (limit !== undefined) {
-			queries.limit = 10;
-		}
-
-		const result = await client.get<MicroCMSListResponse<T>>({ endpoint: apiName, queries });
-		result.contents.forEach((content) => {
-			response.contents.push(nullToUndefined<T & MicroCMSContentId & MicroCMSDate>(content));
-		});
-
-		response.totalCount = result.totalCount;
-		response.limit = result.totalCount;
-
-		if (result.totalCount > result.limit + result.offset && limit === undefined) {
-			await get(result.limit + result.offset);
-		}
-	};
-
-	await get(0);
-
-	return response;
+export const getListAllContents = async <T>(
+	apiName: string,
+	queries: MicroCMSQueries = {}
+): Promise<Array<T & MicroCMSContentId & MicroCMSDate>> => {
+	const response = await client.getAllContents<T>({ endpoint: apiName, queries });
+	return nullToUndefined<Array<T & MicroCMSContentId & MicroCMSDate>>(response);
 };
 
 export const getContentsDetail = async <T>(
