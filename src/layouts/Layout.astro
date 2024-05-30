@@ -9,7 +9,13 @@ interface Props {
 	notFound?: boolean;
 }
 
-const { title, description, ogType = "article", ogImage = "/default-ogp.png", notFound = false } = Astro.props;
+const {
+	title,
+	description,
+	ogType = "article",
+	ogImage = `${Astro.site}default-ogp.png`,
+	notFound = false
+} = Astro.props;
 const serviceTitle = "Aki Coffee☕";
 const pageTitle = title === undefined ? serviceTitle : `${title} ｜ ${serviceTitle}`;
 const pageDescription =
@@ -17,6 +23,13 @@ const pageDescription =
 	"このブログは記事の内容に沿って、AIが背景画像を生成してくれます。書いてて楽しいです。Coffeeに意味はないです。";
 
 const path = Astro.url.pathname.replace(/^\//, "").replace(/\.html$/, "");
+
+const schema = {
+	"@context": "https://schema.org",
+	"@type": "WebSite",
+	name: serviceTitle,
+	url: Astro.site
+};
 ---
 
 <!doctype html>
@@ -37,7 +50,7 @@ const path = Astro.url.pathname.replace(/^\//, "").replace(/\.html$/, "");
 		<meta name="description" content={pageDescription} />
 		<meta name="format-detection" content="email=no,telephone=no,address=no" />
 		<meta name="author" content="彩季" />
-		<meta property="og:url" content={`https://coffee.aki.wtf/${path}`} />
+		<meta property="og:url" content={`${Astro.site}${path}`} />
 		<meta property="og:type" content={ogType} />
 		<meta property="og:title" content={`${title ?? serviceTitle} - AIが背景画像を生成するブログ`} />
 		<meta property="og:description" content={pageDescription} />
@@ -45,7 +58,8 @@ const path = Astro.url.pathname.replace(/^\//, "").replace(/\.html$/, "");
 		<meta property="og:image" content={ogImage} />
 		<meta name="twitter:card" content="summary" />
 		<meta name="twitter:site" content="@Akime_Aki" />
-		{!notFound && <link rel="canonical" href={`https://coffee.aki.wtf/${path}`} />}
+		<script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />
+		{!notFound && <link rel="canonical" href={`${Astro.site}${path}`} />}
 		<link rel="icon" href="/favicon.ico" />
 		<title>{pageTitle} - AIが背景画像を生成するブログ</title>
 		<link rel="sitemap" href="/sitemap-index.xml" />
