@@ -58,6 +58,9 @@ const schema = {
 		<meta property="og:image" content={ogImage} />
 		<meta name="twitter:card" content="summary" />
 		<meta name="twitter:site" content="@Akime_Aki" />
+		<meta name="twitter:title" content={title ?? serviceTitle} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImage} />
 		<script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />
 		{!notFound && <link rel="canonical" href={`${Astro.site}${path}`} />}
 		<link rel="icon" href="/favicon.ico" />
