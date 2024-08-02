@@ -1,31 +1,38 @@
 {
 	"name": "aki-coffee",
 	"version": "1.0.0",
+	"type": "module",
 	"private": true,
+	"engines": {
+		"node": "20.15.0"
+	},
 	"scripts": {
 		"dev": "astro dev --host",
 		"build": "astro build",
 		"preview": "astro preview --host",
-		"astro": "astro",
-		"lint": "eslint './src/**/*.{ts,astro}'",
-		"lint:fix": "npm run lint -- --fix; prettier --write './**/*'"
+		"format": "prettier --write './**/*'",
+		"lint": "ESLINT_USE_FLAT_CONFIG=true eslint .",
+		"lint:fix": "npm run lint -- --fix && npm run format"
 	},
 	"dependencies": {
-		"@astrojs/sitemap": "^3.0.0",
-		"@aws-sdk/client-s3": "^3.456.0",
-		"astro": "^3.0.12",
+		"@astrojs/sitemap": "^3.1.6",
+		"astro": "^4.12.3",
 		"cheerio": "^1.0.0-rc.12",
-		"microcms-js-sdk": "^2.5.0",
+		"microcms-js-sdk": "^3.1.2",
 		"openai": "^4.20.0",
 		"sass": "^1.63.6"
 	},
 	"devDependencies": {
-		"@typescript-eslint/parser": "^6.6.0",
-		"eslint": "^8.49.0",
-		"eslint-config-prettier": "^9.0.0",
-		"eslint-config-standard-with-typescript": "^39.0.0",
-		"eslint-plugin-astro": "^0.29.0",
-		"prettier": "^3.0.3",
-		"prettier-plugin-astro": "^0.12.0"
+		"@eslint/js": "^9.8.0",
+		"@typescript-eslint/parser": "^8.0.0",
+		"astro-eslint-parser": "^1.0.2",
+		"eslint": "^8.57.0",
+		"eslint-config-prettier": "9.1.0",
+		"eslint-plugin-astro": "^1.2.3",
+		"globals": "^15.8.0",
+		"prettier": "3.2.5",
+		"prettier-plugin-astro": "0.13.0",
+		"prettier-plugin-sh": "^0.14.0",
+		"typescript-eslint": "^7.18.0"
 	}
 }

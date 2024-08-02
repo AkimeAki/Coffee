@@ -1,11 +1,12 @@
 ---
 import { ViewTransitions } from "astro:transitions";
+import "@/global.scss";
 
 interface Props {
 	title?: string;
 	description?: string;
 	ogType?: string;
-	ogImage?: string;
+	ogImage?: string | undefined;
 	notFound?: boolean;
 }
 
@@ -35,16 +36,6 @@ const schema = {
 <!doctype html>
 <html lang="ja" transition:animate="fade">
 	<head prefix="og: http: ogp.me ns#">
-		<!-- Google Tag Manager -->
-		<script is:inline>
-			// prettier-ignore
-			(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-			'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-			})(window,document,'script','dataLayer','GTM-KP36GT3H');
-		</script>
-		<!-- End Google Tag Manager -->
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="description" content={pageDescription} />
@@ -61,6 +52,16 @@ const schema = {
 		<meta name="twitter:title" content={title ?? serviceTitle} />
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content={ogImage} />
+		<!-- Google Tag Manager -->
+		<script is:inline>
+			// prettier-ignore
+			(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+			new Date().getTime(),event:'gtm.js'});const f=d.getElementsByTagName(s)[0],
+			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+			'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+			})(window,document,'script','dataLayer','GTM-KP36GT3H');
+		</script>
+		<!-- End Google Tag Manager -->
 		<script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />
 		{!notFound && <link rel="canonical" href={`${Astro.site}${path}`} />}
 		<link rel="icon" href="/favicon.ico" />
@@ -81,80 +82,16 @@ const schema = {
 
 		<div id="wrapper">
 			<div id="sns-link">
-				<a class="twitter-link" href="https://twitter.com/Akime_Aki" target="_blank"></a>
-				<a class="x-link" href="https://x.com/Akime_Aki" target="_blank"></a>
-				<a class="github-link" href="https://github.com/AkimeAki/Coffee" target="_blank"></a>
+				<a id="twitter-link" href="https://twitter.com/Akime_Aki" target="_blank"></a>
+				<a id="x-link" href="https://x.com/Akime_Aki" target="_blank"></a>
+				<a id="github-link" href="https://github.com/AkimeAki/Coffee" target="_blank"></a>
 			</div>
 			<header>
-				<a id="title-link" href="/"><h1 id="title">Aki ☕</h1></a>
+				<a id="title-link" href="/"><h1 id="title">Aki ☕ Blog</h1></a>
 			</header>
 			<p id="description">AIが背景画像を生成するブログ</p>
 			<slot />
 		</div>
-		<style is:global>
-			@font-face {
-				font-family: "GenJyuuGothicL";
-				src: url(/GenJyuuGothicL-Light.ttf);
-			}
-
-			* {
-				/* インターフェース */
-				box-sizing: border-box;
-				padding: 0;
-
-				/* マージン・パディング */
-				margin: 0;
-
-				/* フォント */
-				font-family: GenJyuuGothicL;
-				font-size: 18px;
-				line-height: 1.6;
-
-				color: #777777;
-			}
-
-			*:focus {
-				outline: none;
-			}
-
-			:root {
-				background-color: white;
-			}
-
-			html,
-			body {
-				width: 100%;
-				height: 100%;
-				overflow: hidden;
-			}
-
-			#wrapper {
-				width: 100%;
-				height: 100svh;
-				overflow-y: scroll;
-			}
-
-			ul,
-			ol {
-				padding-block-start: 0;
-				padding-block-end: 0;
-				padding-inline-start: 40px;
-				margin-inline-start: 0;
-				margin-inline-end: 0;
-			}
-
-			a {
-				color: #1976d2;
-			}
-
-			p {
-				margin-bottom: 10px;
-			}
-
-			p:last-of-type {
-				margin-bottom: 0;
-			}
-		</style>
 
 		<style lang="scss">
 			#wrapper {
@@ -176,19 +113,19 @@ const schema = {
 						mask-size: contain;
 					}
 
-					.twitter-link {
+					#twitter-link {
 						-webkit-mask: url("/icon/twitter.png") no-repeat center center / contain;
 						mask-image: url("/icon/twitter.png");
 						background-color: #1a90d9;
 					}
 
-					.github-link {
+					#github-link {
 						-webkit-mask: url("/icon/github.png") no-repeat center center / contain;
 						mask-image: url("/icon/github.png");
 						background-color: #1a1e22;
 					}
 
-					.x-link {
+					#x-link {
 						-webkit-mask: url("/icon/x.png") no-repeat center center / contain;
 						mask-image: url("/icon/x.png");
 						background-color: #000000;

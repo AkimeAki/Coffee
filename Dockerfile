@@ -1,3 +1,1 @@
-FROM node:18.17.1
-
-RUN npm install -g npm@9.8.0
+FROM node:20.15.0

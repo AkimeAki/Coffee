@@ -1,7 +1,13 @@
 import { createClient } from "microcms-js-sdk";
 import { nullToUndefined } from "./nullToUndefined";
 import { loadEnv } from "vite";
-import type { MicroCMSContentId, MicroCMSDate, MicroCMSListResponse, MicroCMSQueries } from "microcms-js-sdk";
+import type {
+	MicroCMSContentId,
+	MicroCMSDate,
+	MicroCMSImage,
+	MicroCMSListResponse,
+	MicroCMSQueries
+} from "microcms-js-sdk";
 
 const env = loadEnv("", process.cwd());
 
@@ -12,6 +18,8 @@ const client = createClient({
 
 export interface Blog {
 	title: string;
+	description?: string;
+	eyecatch?: MicroCMSImage;
 	contents: string;
 }
 

@@ -11,10 +11,21 @@ const posts = await getListAllContents<Blog>("blogs");
 	<main id="card-wrapper">
 		{
 			posts.map((post) => (
-				<a class="post-card" href={`/${post.id}`} aria-label={`記事『${post.title}』を読む`}>
+				<a
+					class="post-card"
+					href={`/${post.id}`}
+					aria-label={`記事『${post.title}』を読む`}
+					data-bg-src={post.eyecatch ? `${post.eyecatch.url}?fm=webp` : ""}
+				>
 					<div class="post-content-wrapper">
 						<div class="post-content-bg" />
-						<div class="post-content-bg-image-wrapper" data-id={post.id} />
+						<div class="post-content-bg-image-wrapper">
+							<img
+								class="post-content-bg-image"
+								loading="lazy"
+								src={post.eyecatch ? `${post.eyecatch.url}?fm=webp&w=250` : ""}
+							/>
+						</div>
 						<div class="post-content" set:html={post.contents} />
 					</div>
 					<div>
@@ -30,30 +41,24 @@ const posts = await getListAllContents<Blog>("blogs");
 </Layout>
 
 <script>
-	const loadImage = () => {
-		const postCards = document.querySelectorAll<HTMLAnchorElement>(".post-card");
-		postCards.forEach((postCard) => {
-			postCard.addEventListener("mouseover", () => {
-				const imageWrapper = postCard.querySelector<HTMLDivElement>(".post-content-bg-image-wrapper");
-
-				if (imageWrapper === null) {
-					return;
-				}
-
-				if (imageWrapper.dataset.setImage === "true") {
-					return;
-				}
-
-				imageWrapper.innerHTML = /* html */ `<img class="post-content-bg-image" src="https://r2.coffee.aki.wtf/${imageWrapper.dataset.id}.png">`;
-				imageWrapper.dataset.setImage = "true";
-			});
-		});
-	};
-
 	document.addEventListener(
 		"astro:page-load",
 		() => {
-			loadImage();
+			const postCards = document.querySelectorAll<HTMLAnchorElement>(".post-card");
+			postCards.forEach((postCard) => {
+				const loadImage = () => {
+					const src = postCard.dataset.bgSrc;
+					if (src === undefined) {
+						return;
+					}
+
+					const image = new Image();
+					image.src = src;
+				};
+
+				postCard.addEventListener("touchstart", loadImage);
+				postCard.addEventListener("mouseover", loadImage);
+			});
 		},
 		false
 	);

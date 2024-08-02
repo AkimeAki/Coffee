@@ -2,20 +2,10 @@
 import Layout from "@/layouts/Layout.astro";
 import { formatDate } from "@/lib/format-date";
 import { getListAllContents } from "@/lib/microcms";
-import cheerio from "cheerio";
 import type { Blog } from "@/lib/microcms";
-import type { MicroCMSContentId, MicroCMSDate } from "microcms-js-sdk";
+import type { GetStaticPaths } from "astro";
 
-interface pathType {
-	params: {
-		id: string;
-	};
-	props: {
-		blog: Blog & MicroCMSContentId & MicroCMSDate;
-	};
-}
-
-export const getStaticPaths = async (): Promise<pathType[]> => {
+export const getStaticPaths = (async () => {
 	const response = await getListAllContents<Blog>("blogs");
 	return response.map((content) => ({
 		params: {
@@ -25,23 +15,15 @@ export const getStaticPaths = async (): Promise<pathType[]> => {
 			blog: content
 		}
 	}));
-};
-
-const { id } = Astro.params;
-if (id === undefined) {
-	return;
-}
+}) satisfies GetStaticPaths;
 
 const { blog } = Astro.props;
-
-const $ = cheerio.load(blog.contents);
-const description = $.text().match(/[^。]+/) !== null ? $.text().match(/[^。]+/) + "。" : undefined;
 ---
 
 <Layout
 	title={blog.title}
-	description={`${description}`}
-	ogImage={`https://r2.coffee.aki.wtf/${blog.id}.png`}
+	description={blog.description ?? ""}
+	ogImage={blog.eyecatch ? `${blog.eyecatch.url}?fm=webp` : undefined}
 	ogType="article"
 >
 	<p id="supplement">最後までスクロールすると、<br />ページ右下のめくれてるとこから背景画像見れるよ</p>
@@ -53,11 +35,11 @@ const description = $.text().match(/[^。]+/) !== null ? $.text().match(/[^。]+
 		<div class="post-content" set:html={blog.contents} />
 	</main>
 	<div id="bg-image-wrapper">
-		<img id="bg-image" src={`https://r2.coffee.aki.wtf/${blog.id}.png`} />
+		<img id="bg-image" src={blog.eyecatch ? `${blog.eyecatch.url}?fm=webp` : ""} />
 	</div>
 	<div id="curl" data-status="close" data-view="false"></div>
 	<div id="curl-image" data-view="false">
-		<img src={`https://r2.coffee.aki.wtf/${blog.id}.png`} alt="" />
+		<img src={blog.eyecatch ? `${blog.eyecatch.url}?fm=webp` : ""} alt="" />
 	</div>
 </Layout>
 

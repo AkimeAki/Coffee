@@ -1,23 +1,24 @@
 import type { AstroIntegration } from "astro";
 import { loadEnv } from "vite";
-import { S3Client, ListObjectsV2Command, PutObjectCommand } from "@aws-sdk/client-s3";
-import { getListContents, getContentsDetail } from "./microcms.ts";
+import { getListAllContents } from "./microcms.ts";
 import OpenAI from "openai";
-import cheerio from "cheerio";
+import * as cheerio from "cheerio";
 import type { Blog } from "./microcms.ts";
+import { createClient, createManagementClient } from "microcms-js-sdk";
 
 const env = loadEnv("", process.cwd());
 const openai = new OpenAI({
 	apiKey: env.VITE_OPENAPI_KEY ?? ""
 });
 
-const S3 = new S3Client({
-	region: "auto",
-	endpoint: env.VITE_R2_ENDPOINT ?? "",
-	credentials: {
-		accessKeyId: env.VITE_R2_ACCESS_KEY_ID ?? "",
-		secretAccessKey: env.VITE_R2_SECRET_ACCESS_KEY ?? ""
-	}
+const managementClient = createManagementClient({
+	serviceDomain: import.meta.env.VITE_MICROCMS_SERVICE_DOMAIN ?? env.VITE_MICROCMS_SERVICE_DOMAIN,
+	apiKey: import.meta.env.VITE_MICROCMS_API_KEY ?? env.VITE_MICROCMS_API_KEY
+});
+
+const client = createClient({
+	serviceDomain: import.meta.env.VITE_MICROCMS_SERVICE_DOMAIN ?? env.VITE_MICROCMS_SERVICE_DOMAIN,
+	apiKey: import.meta.env.VITE_MICROCMS_API_KEY ?? env.VITE_MICROCMS_API_KEY
 });
 
 export default function (): AstroIntegration {
@@ -25,48 +26,49 @@ export default function (): AstroIntegration {
 		name: "ai-image",
 		hooks: {
 			"astro:build:start": async ({ logger }) => {
-				logger.info("Ai画像未生成の記事を検索中");
 				try {
-					const r2Data = await S3.send(new ListObjectsV2Command({ Bucket: "coffee" }));
-					if (r2Data.Contents === undefined) {
-						throw new Error();
-					}
+					const posts = await getListAllContents<Blog>("blogs");
 
-					const posts = await getListContents<Blog>("blogs");
-					const ids: string[] = [];
-					posts.contents.forEach((post) => {
-						ids.push(post.id);
-					});
+					for (const post of posts) {
+						const $ = cheerio.load(post.contents);
+						const blogContent = $.text();
 
-					const ungeneratedIds: string[] = [];
+						if (post.description === undefined || post.description === "") {
+							logger.info("以下のIDについて要約生成を行います。");
+							logger.info(post.id);
 
-					ids.forEach((id) => {
-						let generated = false;
+							logger.info("Ai要約生成中");
 
-						r2Data.Contents?.forEach((content) => {
-							if (`${id}.png` === content.Key) {
-								generated = true;
-							}
-						});
+							const descriptionResponse = await openai.chat.completions.create({
+								model: "gpt-4o-mini",
+								messages: [
+									{
+										role: "user",
+										content: `次の文章はブログ記事の本文です。内容を70文字に日本語で要約してください。文章の口調は本文に合わせてください。要約以外の内容は出力しないでください。\n\n${blogContent}`
+									}
+								],
+								stream: false
+							});
 
-						if (!generated) {
-							ungeneratedIds.push(id);
+							const description = descriptionResponse.choices[0]?.message.content
+								? descriptionResponse.choices[0]?.message.content + "というお話らしいよ。"
+								: "";
+
+							await client.update({
+								endpoint: "blogs",
+								contentId: post.id,
+								content: {
+									description
+								}
+							});
 						}
-					});
 
-					if (ungeneratedIds.length !== 0) {
-						logger.info("以下のIDについて画像生成を行います。");
-						logger.info(ungeneratedIds.join(", "));
+						if (post.eyecatch === undefined) {
+							logger.info("以下のIDについて画像生成を行います。");
+							logger.info(post.id);
+							logger.info("Ai画像生成中");
 
-						logger.info("Ai画像生成中");
-
-						for (const id of ungeneratedIds) {
-							const post = await getContentsDetail<Blog>("blogs", id);
-							const $ = cheerio.load(post.contents);
-
-							const blogContent = $.text();
-
-							const prompt = `Extract some keywords from the following text and generate images without including text according to the keywords. The atmosphere of the image should be in the style of a real-life photograph.If the image would be blocked by the safety system, generate it with something that will not be blocked.\n\n"${blogContent}"`;
+							const prompt = `次の文章はブログの記事です。そのサムネイルに良い画像を生成してください。\n\n"${blogContent}"`;
 
 							const imageResponse = await openai.images.generate({
 								model: "dall-e-3",
@@ -86,17 +88,20 @@ export default function (): AstroIntegration {
 							}
 
 							const res = await fetch(imageUrl);
-							const arrayBuffer = await res.arrayBuffer();
-							const buffer = Buffer.from(arrayBuffer);
+							const blob = await res.blob();
 
-							await S3.send(
-								new PutObjectCommand({
-									Body: buffer,
-									Bucket: "coffee",
-									Key: `${id}.png`,
-									ContentType: "image/png"
-								})
-							);
+							const { url } = await managementClient.uploadMedia({
+								data: blob,
+								name: "image.png"
+							});
+
+							await client.update({
+								endpoint: "blogs",
+								contentId: post.id,
+								content: {
+									eyecatch: url
+								}
+							});
 						}
 					}
 				} catch (e) {
