@@ -251,6 +251,8 @@ const { blog } = Astro.props;
 			curl.addEventListener("click", () => {
 				if (curl.dataset.status === "close") {
 					curl.dataset.status = "open";
+					document.body.style.overflowY = "scroll";
+					wrapper.style.overflow = "hidden";
 
 					curl.style.width = size + "px";
 					curl.style.height = size + "px";
@@ -258,6 +260,8 @@ const { blog } = Astro.props;
 					curlImage.style.height = size + "px";
 				} else {
 					curl.dataset.status = "close";
+					document.body.style.overflowY = "";
+					wrapper.style.overflow = "";
 
 					curl.style.width = "";
 					curl.style.height = "";
