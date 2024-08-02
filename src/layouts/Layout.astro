@@ -19,8 +19,8 @@ const {
 	notFound = false,
 	schema = []
 } = Astro.props;
-const serviceTitle = "Aki Coffee☕";
-const pageTitle = title === undefined ? serviceTitle : `${title} ｜ ${serviceTitle}`;
+export const serviceTitle = "Aki Coffee☕";
+const pageTitle = title === undefined ? serviceTitle : `${title} | ${serviceTitle}`;
 const pageDescription =
 	description ??
 	"このブログは記事の内容に沿って、AIが背景画像を生成してくれます。書いてて楽しいです。Coffeeに意味はないです。";

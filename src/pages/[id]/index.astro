@@ -1,5 +1,5 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import Layout, { serviceTitle } from "@/layouts/Layout.astro";
 import { formatDate } from "@/lib/format-date";
 import { getListAllContents } from "@/lib/microcms";
 import type { Blog } from "@/lib/microcms";
@@ -22,8 +22,8 @@ const { blog } = Astro.props;
 const schema = {
 	"@context": "https://schema.org",
 	"@type": "BlogPosting",
-	name: `${blog.title} - AIが背景画像を生成するブログ`,
-	alternateName: blog.title,
+	name: `${blog.title} | ${serviceTitle} - AIが背景画像を生成するブログ`,
+	alternateName: `${blog.title} | ${serviceTitle}`,
 	description: blog.description ?? "",
 	url: `${Astro.site}${blog.id}`,
 	image: {
