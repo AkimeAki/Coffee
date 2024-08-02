@@ -8,6 +8,7 @@ interface Props {
 	ogType?: string;
 	ogImage?: string | undefined;
 	notFound?: boolean;
+	schema?: unknown[];
 }
 
 const {
@@ -15,7 +16,8 @@ const {
 	description,
 	ogType = "article",
 	ogImage = `${Astro.site}default-ogp.png`,
-	notFound = false
+	notFound = false,
+	schema = []
 } = Astro.props;
 const serviceTitle = "Aki Coffee☕";
 const pageTitle = title === undefined ? serviceTitle : `${title} ｜ ${serviceTitle}`;
@@ -25,12 +27,16 @@ const pageDescription =
 
 const path = Astro.url.pathname.replace(/^\//, "").replace(/\.html$/, "");
 
-const schema = {
+const baseSchema = {
 	"@context": "https://schema.org",
 	"@type": "WebSite",
-	name: serviceTitle,
+	name: `${serviceTitle} - AIが背景画像を生成するブログ`,
+	alternateName: serviceTitle,
+	description: pageDescription,
 	url: Astro.site
 };
+
+const schemaList = [...schema, baseSchema];
 ---
 
 <!doctype html>
@@ -62,7 +68,7 @@ const schema = {
 			})(window,document,'script','dataLayer','GTM-KP36GT3H');
 		</script>
 		<!-- End Google Tag Manager -->
-		<script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />
+		{schemaList.map((schema) => <script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />)}
 		{!notFound && <link rel="canonical" href={`${Astro.site}${path}`} />}
 		<link rel="icon" href="/favicon.ico" />
 		<title>{pageTitle} - AIが背景画像を生成するブログ</title>

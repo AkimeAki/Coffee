@@ -18,6 +18,20 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { blog } = Astro.props;
+
+const schema = {
+	"@context": "https://schema.org",
+	"@type": "BlogPosting",
+	name: `${blog.title} - AIが背景画像を生成するブログ`,
+	alternateName: blog.title,
+	description: blog.description ?? "",
+	url: `${Astro.site}${blog.id}`,
+	image: {
+		"@type": "ImageObject",
+		url: blog.eyecatch ? `${blog.eyecatch.url}?fm=webp` : ""
+	},
+	datePublished: blog.publishedAt ?? blog.createdAt
+};
 ---
 
 <Layout
@@ -25,6 +39,7 @@ const { blog } = Astro.props;
 	description={blog.description ?? ""}
 	ogImage={blog.eyecatch ? `${blog.eyecatch.url}?fm=webp` : undefined}
 	ogType="article"
+	schema={[schema]}
 >
 	<p id="supplement">最後までスクロールすると、<br />ページ右下のめくれてるとこから背景画像見れるよ</p>
 	<main id="post-wrapper">
