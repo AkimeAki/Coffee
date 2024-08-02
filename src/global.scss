@@ -1,16 +1,17 @@
 @font-face {
-	font-family: "GenJyuuGothicL";
-	src: url(/GenJyuuGothicL-Light.ttf);
+	font-family: "851";
+	src: url("/851tegaki_zatsu_normal_0883.ttf");
 }
 
 * {
 	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
-	font-family: GenJyuuGothicL;
+	font-family: "851";
 	font-size: 18px;
 	line-height: 1.6;
 	color: #777777;
+	font-weight: normal;
 }
 
 *:focus {

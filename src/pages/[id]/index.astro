@@ -80,13 +80,29 @@ const schema = {
 	#supplement {
 		text-align: center;
 		color: white;
-		font-size: 14px;
+		font-size: 20px;
+		animation-name: viewSupplement;
+		animation-duration: 400ms;
+		animation-fill-mode: forwards;
+		animation-timing-function: linear;
+		animation-delay: 500ms;
+		opacity: 0;
 
 		br {
 			display: none;
 			@media screen and (max-width: 650px) {
 				display: block;
 			}
+		}
+	}
+
+	@keyframes viewSupplement {
+		0% {
+			opacity: 0;
+		}
+
+		100% {
+			opacity: 1;
 		}
 	}
 
@@ -115,7 +131,7 @@ const schema = {
 		padding: 25px 25px 100px 25px;
 
 		.post-title {
-			font-size: 18px;
+			font-size: 26px;
 			margin-bottom: 50px;
 			color: white;
 		}
@@ -123,7 +139,9 @@ const schema = {
 		.post-content {
 			:global(p) {
 				margin-bottom: 35px;
-				font-size: 16px;
+				font-size: 18px;
+				font-weight: normal;
+				letter-spacing: 0.2em;
 				color: white;
 
 				&:last-child {
