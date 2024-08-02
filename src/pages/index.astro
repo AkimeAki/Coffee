@@ -58,6 +58,19 @@ const posts = await getListAllContents<Blog>("blogs");
 
 				postCard.addEventListener("touchstart", loadImage);
 				postCard.addEventListener("mouseover", loadImage);
+				postCard.addEventListener("touchstart", () => {
+					const imageWrap = postCard.querySelector<HTMLDivElement>(".post-content-bg-image-wrapper");
+					if (imageWrap !== null) {
+						imageWrap.style.opacity = "1";
+					}
+				});
+
+				postCard.addEventListener("touchend", () => {
+					const imageWrap = postCard.querySelector<HTMLDivElement>(".post-content-bg-image-wrapper");
+					if (imageWrap !== null) {
+						imageWrap.style.opacity = "";
+					}
+				});
 			});
 		},
 		false
@@ -91,9 +104,11 @@ const posts = await getListAllContents<Blog>("blogs");
 			text-decoration: none;
 
 			&:hover {
-				.post-content-wrapper {
-					.post-content-bg-image-wrapper {
-						opacity: 1;
+				@media (hover: hover) {
+					.post-content-wrapper {
+						.post-content-bg-image-wrapper {
+							opacity: 1;
+						}
 					}
 				}
 			}
