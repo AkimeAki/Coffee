@@ -90,12 +90,12 @@ const posts = await getListAllContents<Blog>("blogs");
 				// 	}
 				// });
 
-				// postCard.addEventListener("touchend", () => {
-				// 	const imageWrap = postCard.querySelector<HTMLDivElement>(".post-content-bg-image-wrapper");
-				// 	if (imageWrap !== null) {
-				// 		imageWrap.style.opacity = "";
-				// 	}
-				// });
+				postCard.addEventListener("touchend", () => {
+					const imageWrap = postCard.querySelector<HTMLDivElement>(".post-content-bg-image-wrapper");
+					if (imageWrap !== null) {
+						imageWrap.style.opacity = "";
+					}
+				});
 			});
 		},
 		false
