@@ -263,7 +263,7 @@ const schema = {
 			curlImage.style.bottom = -1 * wrapper.scrollTop + "px";
 
 			const scrollBottom = wrapper.scrollHeight - wrapper.offsetHeight - wrapper.scrollTop;
-			if (scrollBottom <= 0) {
+			if (scrollBottom < 10) {
 				curl.dataset.view = "true";
 				curlImage.dataset.view = "true";
 			} else {
