@@ -41,7 +41,9 @@ const schema = {
 	ogType="article"
 	schema={[schema]}
 >
-	<p id="supplement">最後までスクロールすると、<br />ページ右下のめくれてるとこから背景画像見れるよ</p>
+	<div id="supplement">
+		<p>最後までスクロールすると、<br />背景画像が見れるよ</p>
+	</div>
 	<main id="post-wrapper">
 		<time class="post-date" datetime={blog.publishedAt ?? blog.createdAt}>
 			{formatDate(blog.publishedAt ?? blog.createdAt)}
@@ -57,6 +59,38 @@ const schema = {
 		<img src={blog.eyecatch ? `${blog.eyecatch.url}?fm=webp` : ""} alt="" />
 	</div>
 </Layout>
+
+<style>
+	@keyframes rough-notation-dash {
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+</style>
+
+<script>
+	import { annotate } from "rough-notation";
+
+	const annotation = () => {
+		document.fonts.ready.then(() => {
+			const supplement = document.querySelector<HTMLParagraphElement>("#supplement > p");
+			if (supplement !== null) {
+				const supplementAnnotate = annotate(supplement, { type: "underline", color: "white" });
+				supplementAnnotate.show();
+			}
+		});
+	};
+
+	annotation();
+
+	document.addEventListener(
+		"astro:after-swap",
+		() => {
+			annotation();
+		},
+		false
+	);
+</script>
 
 <style lang="scss">
 	:global(#title) {
@@ -79,30 +113,18 @@ const schema = {
 
 	#supplement {
 		text-align: center;
-		color: white;
-		font-size: 20px;
-		animation-name: viewSupplement;
-		animation-duration: 400ms;
-		animation-fill-mode: forwards;
-		animation-timing-function: linear;
-		animation-delay: 500ms;
-		opacity: 0;
+
+		p {
+			color: white;
+			font-size: 20px;
+			display: inline-block;
+		}
 
 		br {
 			display: none;
 			@media screen and (max-width: 650px) {
 				display: block;
 			}
-		}
-	}
-
-	@keyframes viewSupplement {
-		0% {
-			opacity: 0;
-		}
-
-		100% {
-			opacity: 1;
 		}
 	}
 

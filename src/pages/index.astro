@@ -18,7 +18,6 @@ const posts = await getListAllContents<Blog>("blogs");
 					data-bg-src={post.eyecatch ? `${post.eyecatch.url}?fm=webp` : ""}
 				>
 					<div class="post-content-wrapper">
-						<div class="post-content-bg" />
 						<div class="post-content-bg-image-wrapper">
 							<img
 								class="post-content-bg-image"
@@ -39,6 +38,32 @@ const posts = await getListAllContents<Blog>("blogs");
 		}
 	</main>
 </Layout>
+
+<style>
+	@keyframes rough-notation-dash {
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+</style>
+
+<script>
+	import { annotate } from "rough-notation";
+
+	const annotation = () => {
+		const postCards = document.querySelectorAll<HTMLDivElement>(".post-content-wrapper");
+		postCards.forEach((postCard) => {
+			const postCardAnnotate = annotate(postCard, { type: "box", color: "#ffd9c6" });
+			postCardAnnotate.show();
+		});
+	};
+
+	annotation();
+
+	document.addEventListener("astro:after-swap", () => {
+		annotation();
+	});
+</script>
 
 <script>
 	document.addEventListener(
@@ -116,11 +141,9 @@ const posts = await getListAllContents<Blog>("blogs");
 			.post-content-wrapper {
 				position: relative;
 				padding: 30px;
-				border-radius: 30px;
 				height: 150px;
 				overflow: hidden;
 
-				.post-content-bg,
 				.post-content-bg-image-wrapper {
 					position: absolute;
 					top: 0;
@@ -129,11 +152,6 @@ const posts = await getListAllContents<Blog>("blogs");
 					height: 100%;
 					user-select: none;
 					pointer-events: none;
-				}
-
-				.post-content-bg {
-					background-color: #fff1ea;
-					z-index: -2;
 				}
 
 				.post-content-bg-image-wrapper {
