@@ -69,9 +69,6 @@ const posts = await getListAllContents<Blog>("blogs");
 	document.addEventListener(
 		"astro:page-load",
 		() => {
-			const ua = window.navigator.userAgent;
-			const isIOS = ua.includes("iphone") || ua.includes("ipod") || ua.includes("ipad");
-
 			const postCards = document.querySelectorAll<HTMLAnchorElement>(".post-card");
 			postCards.forEach((postCard) => {
 				const loadImage = () => {
@@ -86,16 +83,6 @@ const posts = await getListAllContents<Blog>("blogs");
 
 				postCard.addEventListener("touchstart", loadImage);
 				postCard.addEventListener("mouseover", loadImage);
-
-				if (isIOS && /safari\/[0-9.]+$/.test(ua)) {
-					postCard.addEventListener("touchstart", () => {
-						const imageWrap = postCard.querySelector<HTMLDivElement>(".post-content-bg-image-wrapper");
-						if (imageWrap !== null) {
-							imageWrap.style.opacity = "1";
-						}
-					});
-				}
-
 				postCard.addEventListener("touchend", () => {
 					const imageWrap = postCard.querySelector<HTMLDivElement>(".post-content-bg-image-wrapper");
 					if (imageWrap !== null) {
