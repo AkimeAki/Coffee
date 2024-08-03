@@ -81,7 +81,7 @@ const posts = await getListAllContents<Blog>("blogs");
 					image.src = src;
 				};
 
-				postCard.addEventListener("touchstart", loadImage);
+				// postCard.addEventListener("touchstart", loadImage);
 				postCard.addEventListener("mouseover", loadImage);
 				postCard.addEventListener("touchstart", () => {
 					const imageWrap = postCard.querySelector<HTMLDivElement>(".post-content-bg-image-wrapper");
