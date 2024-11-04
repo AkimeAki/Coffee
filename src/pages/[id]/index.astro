@@ -87,6 +87,12 @@ const schema = {
 		"astro:after-swap",
 		() => {
 			annotation();
+
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			if ((window as any).twttr !== undefined && (window as any).twttr.widgets !== undefined) {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(window as any).twttr.widgets.load();
+			}
 		},
 		false
 	);
@@ -173,6 +179,10 @@ const schema = {
 				&:last-child {
 					margin-bottom: 0;
 				}
+			}
+
+			:global(hr) {
+				margin-bottom: 35px;
 			}
 		}
 
