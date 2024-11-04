@@ -11,9 +11,8 @@ const posts = await getListAllContents<Blog>("blogs");
 	<main id="card-wrapper">
 		{
 			posts.map((post) => (
-				<a
+				<div
 					class="post-card"
-					href={`/${post.id}`}
 					aria-label={`記事『${post.title}』を読む`}
 					data-bg-src={post.eyecatch ? `${post.eyecatch.url}?fm=webp` : ""}
 				>
@@ -33,7 +32,8 @@ const posts = await getListAllContents<Blog>("blogs");
 							{formatDate(post.publishedAt ?? post.createdAt)}
 						</time>
 					</div>
-				</a>
+					<a class="post-link" href={`/${post.id}`} />
+				</div>
 			))
 		}
 	</main>
@@ -164,6 +164,10 @@ const posts = await getListAllContents<Blog>("blogs");
 				.post-content {
 					:global(p) {
 						font-size: 5px;
+					}
+
+					:global(*:not(p)) {
+						display: none !important;
 					}
 				}
 			}
