@@ -68,7 +68,7 @@ export default function (): AstroIntegration {
 							logger.info(post.id);
 							logger.info("Ai画像生成中");
 
-							const prompt = `次のブログの文章からイメージできるテーマをいくつか考え、アニメ風のイラストを作ってください。\n\n"${blogContent}"\n\n: `;
+							const prompt = `次のブログの文章からイメージできるテーマをいくつか考え、そのテーマに沿ってテキストを含めないアニメ風のイラストを作ってください。\n\n"${blogContent}"\n\n: `;
 
 							const imageResponse = await openai.images.generate({
 								model: "dall-e-3",
