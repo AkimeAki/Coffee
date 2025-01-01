@@ -81,16 +81,22 @@ const schema = {
 	import { annotate } from "rough-notation";
 
 	const annotation = () => {
-		document.fonts.ready.then(() => {
-			const supplement = document.querySelector<HTMLParagraphElement>("#supplement > p");
-			if (supplement !== null) {
-				const supplementAnnotate = annotate(supplement, { type: "underline", color: "white" });
-				supplementAnnotate.show();
-			}
+		const supplement = document.querySelector<HTMLParagraphElement>("#supplement > p");
+		if (supplement !== null) {
+			const supplementAnnotate = annotate(supplement, { type: "underline", color: "white" });
+			supplementAnnotate.show();
+		}
+
+		const links = document.querySelectorAll<HTMLAnchorElement>(".post-content > p >  a");
+		links.forEach((link) => {
+			const linkAnnotate = annotate(link, { type: "highlight", color: "white" });
+			linkAnnotate.show();
 		});
 	};
 
-	annotation();
+	document.fonts.ready.then(() => {
+		annotation();
+	});
 
 	document.addEventListener(
 		"astro:after-swap",
@@ -198,7 +204,12 @@ const schema = {
 			}
 
 			:global(a) {
-				color: #9bf0ff;
+				color: #2d6cff;
+				text-decoration: none;
+
+				&:hover {
+					color: #9bb9ff;
+				}
 			}
 
 			:global(.iframely-embed) {

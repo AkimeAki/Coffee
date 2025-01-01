@@ -58,7 +58,9 @@ const posts = await getListAllContents<Blog>("blogs");
 		});
 	};
 
-	annotation();
+	document.fonts.ready.then(() => {
+		annotation();
+	});
 
 	document.addEventListener("astro:after-swap", () => {
 		annotation();
