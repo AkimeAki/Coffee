@@ -4,6 +4,7 @@ import { formatDate } from "@/lib/format-date";
 import { getListAllContents } from "@/lib/microcms";
 import type { Blog } from "@/lib/microcms";
 import type { GetStaticPaths } from "astro";
+import * as cheerio from "cheerio";
 
 export const getStaticPaths = (async () => {
 	const response = await getListAllContents<Blog>("blogs");
@@ -18,6 +19,14 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { blog } = Astro.props;
+
+let contents = blog.contents;
+const $ = cheerio.load(contents);
+$('script[src="//cdn.iframe.ly/embed.js"]').each((_, element) => {
+	$(element).remove();
+});
+
+contents = $("body").html() ?? "";
 
 const schema = {
 	"@context": "https://schema.org",
@@ -49,7 +58,7 @@ const schema = {
 			{formatDate(blog.publishedAt ?? blog.createdAt)}
 		</time>
 		<h2 class="post-title">{blog.title}</h2>
-		<div class="post-content" set:html={blog.contents} />
+		<div class="post-content" set:html={contents} />
 	</main>
 	<div id="bg-image-wrapper">
 		<img id="bg-image" src={blog.eyecatch ? `${blog.eyecatch.url}?fm=webp` : ""} />
@@ -183,6 +192,16 @@ const schema = {
 
 			:global(hr) {
 				margin-bottom: 35px;
+				&:last-child {
+					margin-bottom: 0;
+				}
+			}
+
+			:global(.iframely-embed) {
+				margin-bottom: 35px;
+				&:last-child {
+					margin-bottom: 0;
+				}
 			}
 		}
 
