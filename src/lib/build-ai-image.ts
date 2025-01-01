@@ -68,7 +68,7 @@ export default function (): AstroIntegration {
 							logger.info(post.id);
 							logger.info("Ai画像生成中");
 
-							const prompt = `次の文章はブログの記事です。そのサムネイルに良い画像を幻想的な感じで生成してください。\n\n"${blogContent}"`;
+							const prompt = `次の文章はブログの記事です。そのサムネイルに良い画像をきれいで幻想的な感じで生成してください。\n\n"${blogContent}"`;
 
 							const imageResponse = await openai.images.generate({
 								model: "dall-e-3",
