@@ -92,6 +92,12 @@ const schema = {
 			const linkAnnotate = annotate(link, { type: "highlight", color: "white" });
 			linkAnnotate.show();
 		});
+
+		const hrs = document.querySelectorAll<HTMLHRElement>(".post-content hr");
+		hrs.forEach((hr) => {
+			const hrAnnotate = annotate(hr, { type: "strike-through", color: "white" });
+			hrAnnotate.show();
+		});
 	};
 
 	document.fonts.ready.then(() => {
@@ -197,6 +203,8 @@ const schema = {
 			}
 
 			:global(hr) {
+				opacity: 0;
+
 				margin-bottom: 35px;
 				&:last-child {
 					margin-bottom: 0;
