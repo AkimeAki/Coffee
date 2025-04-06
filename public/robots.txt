@@ -3,4 +3,4 @@ Allow: /
 Disallow: /*/
 Disallow: /*.html
 Disallow: /404
-Sitemap: https://coffee.aki.wtf/sitemap-index.xml
+Sitemap: https://coffee.shikiiro.net/sitemap-index.xml

@@ -8,7 +8,7 @@ export default defineConfig({
 		port: 7001
 	},
 	experimental: {},
-	site: "https://coffee.aki.wtf",
+	site: "https://coffee.shikiiro.net",
 	trailingSlash: "never",
 	integrations: [sitemap(), buildAiImage()],
 	build: {
