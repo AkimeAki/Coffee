@@ -51,7 +51,7 @@ export default function (): AstroIntegration {
 							});
 
 							const description = descriptionResponse.choices[0]?.message.content
-								? descriptionResponse.choices[0]?.message.content + "というお話らしいよ。"
+								? descriptionResponse.choices[0]?.message.content + "というお話らしいよ by AI"
 								: "";
 
 							await client.update({
