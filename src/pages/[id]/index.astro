@@ -235,7 +235,7 @@ const schema = {
 			left: 0;
 			color: white;
 			font-weight: bold;
-			transform: rotate(45deg);
+			transform: rotate(30deg);
 			opacity: 0;
 			white-space: nowrap;
 			user-select: none;
@@ -278,7 +278,7 @@ const schema = {
 					clickText.style.display = "block";
 					setTimeout(() => {
 						clickText.style.display = "";
-					}, 500);
+					}, 1000);
 				}
 
 				viewClick();
@@ -339,9 +339,17 @@ const schema = {
 
 			lastUpdateTime = now - (deltaTime % (1000 / maxFPS));
 
+			let size = "max(10vw, 130px)";
+
 			if (document.body.dataset.touch !== "true") {
 				currentX += (mouseX - currentX) * ease;
 				currentY += (mouseY - currentY) * ease;
+
+				if (target instanceof HTMLElement && postContent.contains(target)) {
+					size = "70px";
+					currentX += 8;
+					currentY += 8;
+				}
 			} else {
 				if (isViewImageTouch) {
 					const clickViewImageTouchElement =
@@ -356,23 +364,20 @@ const schema = {
 				}
 			}
 
-			if (target instanceof HTMLElement && postContent.contains(target)) {
-				mouseLeave();
-			} else {
-				const maskStyle = `radial-gradient(circle 10vw at ${currentX}px ${currentY}px, transparent 0%, black 100%)`;
-				filterImage.style.maskImage = maskStyle;
-				filterImageOver.style.opacity = "0";
-				clickText.style.top = `calc(${currentY}px - 7vw)`;
-				clickText.style.left = `calc(${currentX}px + 7vw)`;
-				if (document.body.dataset.touch === "true") {
-					if (isViewImageTouch) {
-						filterImageOver.style.opacity = "0";
-					} else {
-						filterImageOver.style.opacity = "1";
-					}
-				} else {
+			const maskStyle = `radial-gradient(circle ${size} at ${currentX}px ${currentY}px, transparent 0%, black 100%)`;
+			filterImage.style.maskImage = maskStyle;
+			filterImageOver.style.opacity = "0";
+			clickText.style.top = `calc(${currentY}px - 6vw)`;
+			clickText.style.left = `calc(${currentX}px + 3vw)`;
+			if (document.body.dataset.touch === "true") {
+				if (isViewImageTouch) {
 					filterImageOver.style.opacity = "0";
+				} else {
+					filterImageOver.style.opacity = "1";
 				}
+			} else {
+				clickText.style.opacity = "1";
+				filterImageOver.style.opacity = "0";
 			}
 		}
 
@@ -408,6 +413,10 @@ const schema = {
 			}
 
 			animating = true;
+
+			if (animating && !isFullView) {
+				document.body.dataset.viewImage = "clear";
+			}
 
 			const startTime = performance.now();
 			const duration = 1000;
