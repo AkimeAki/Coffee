@@ -71,11 +71,16 @@ export default function (): AstroIntegration {
 							const prompt = `次のブログの文章からイメージできるテーマをいくつか考え、そのテーマに沿ってテキストを含めないアニメ風のイラストを作ってください。\n\n"${blogContent}"\n\n: `;
 
 							const imageResponse = await openai.images.generate({
-								model: "dall-e-3",
+								model: "gpt-image-1",
 								prompt,
 								n: 1,
-								size: "1792x1024"
+								size: "1536x1024",
+								quality: "medium"
 							});
+
+							if (imageResponse.data === undefined) {
+								throw new Error();
+							}
 
 							if (imageResponse.data[0] === undefined) {
 								throw new Error();
