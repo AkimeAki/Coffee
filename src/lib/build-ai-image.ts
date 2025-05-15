@@ -100,6 +100,8 @@ export default function (): AstroIntegration {
 									eyecatch: url
 								}
 							});
+
+							logger.info("AI画像の生成完了");
 						}
 					}
 				} catch (e) {
