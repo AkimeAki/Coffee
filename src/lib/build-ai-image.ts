@@ -66,9 +66,9 @@ export default function (): AstroIntegration {
 						if (post.eyecatch === undefined) {
 							logger.info("以下のIDについて画像生成を行います。");
 							logger.info(post.id);
-							logger.info("Ai画像生成中");
+							logger.info("AI画像生成中");
 
-							const prompt = `次のブログの文章からイメージできるテーマをいくつか考え、そのテーマに沿ってテキストを含めないイラストを作ってください。\n\n"${blogContent}"\n\n: `;
+							const prompt = `ブログの背景画像を作りたいです。次のブログの文章からイメージできるテーマをいくつか考え、そのテーマに沿ってテキストを含めない幻想的なイラストを作ってください。\n\n"${blogContent}"\n\n: `;
 
 							const imageResponse = await openai.images.generate({
 								model: "gpt-image-1",
@@ -78,15 +78,7 @@ export default function (): AstroIntegration {
 								quality: "medium"
 							});
 
-							if (imageResponse.data === undefined) {
-								throw new Error();
-							}
-
-							if (imageResponse.data[0] === undefined) {
-								throw new Error();
-							}
-
-							const imageBase64 = imageResponse.data[0].b64_json;
+							const imageBase64 = imageResponse.data?.[0]?.b64_json;
 
 							if (imageBase64 === undefined) {
 								throw new Error();
@@ -94,7 +86,7 @@ export default function (): AstroIntegration {
 
 							const imageBytes = Buffer.from(imageBase64, "base64");
 
-							const blob = new Blob([imageBytes]);
+							const blob = new Blob([imageBytes], { type: "image/png" });
 
 							const { url } = await managementClient.uploadMedia({
 								data: blob,
