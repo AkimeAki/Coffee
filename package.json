@@ -12,7 +12,7 @@
 		"preview": "astro preview --host",
 		"format": "prettier --write './**/*'",
 		"lint": "biome lint",
-		"prepare": "husky"
+		"prepare": "panda codegen && husky"
 	},
 	"dependencies": {
 		"@akimeaki/reset-css": "0.5.1",
