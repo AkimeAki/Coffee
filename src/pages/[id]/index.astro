@@ -376,7 +376,11 @@ const schema = {
 					filterImageOver.style.opacity = "1";
 				}
 			} else {
-				clickText.style.opacity = "1";
+				if (target instanceof HTMLElement && postContent.contains(target)) {
+					clickText.style.opacity = "0";
+				} else {
+					clickText.style.opacity = "1";
+				}
 				filterImageOver.style.opacity = "0";
 			}
 		}
