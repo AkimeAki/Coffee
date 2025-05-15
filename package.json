@@ -4,36 +4,34 @@
 	"type": "module",
 	"private": true,
 	"engines": {
-		"node": "20.15.0"
+		"node": "22.15.0"
 	},
 	"scripts": {
 		"dev": "astro dev --host",
 		"build": "astro build",
 		"preview": "astro preview --host",
 		"format": "prettier --write './**/*'",
-		"lint": "ESLINT_USE_FLAT_CONFIG=true eslint .",
-		"lint:fix": "npm run lint -- --fix && npm run format"
+		"lint": "biome lint",
+		"prepare": "husky"
 	},
 	"dependencies": {
-		"@astrojs/sitemap": "^3.1.6",
-		"astro": "^4.12.3",
-		"cheerio": "^1.0.0-rc.12",
-		"microcms-js-sdk": "^3.1.2",
-		"openai": "^4.20.0",
-		"rough-notation": "^0.5.1",
-		"sass": "^1.63.6"
+		"@akimeaki/reset-css": "0.5.1",
+		"@astrojs/sitemap": "3.4.0",
+		"@pandacss/dev": "0.53.6",
+		"astro": "5.7.12",
+		"cheerio": "1.0.0",
+		"install": "0.13.0",
+		"microcms-js-sdk": "3.2.0",
+		"npm": "11.3.0",
+		"openai": "4.98.0",
+		"rough-notation": "0.5.1",
+		"sass": "1.88.0"
 	},
 	"devDependencies": {
-		"@eslint/js": "^9.8.0",
-		"@typescript-eslint/parser": "^8.0.0",
-		"astro-eslint-parser": "^1.0.2",
-		"eslint": "^8.57.0",
-		"eslint-config-prettier": "9.1.0",
-		"eslint-plugin-astro": "^1.2.3",
-		"globals": "^15.8.0",
-		"prettier": "3.2.5",
-		"prettier-plugin-astro": "0.13.0",
-		"prettier-plugin-sh": "^0.14.0",
-		"typescript-eslint": "^7.18.0"
+		"@biomejs/biome": "1.9.4",
+		"husky": "9.1.7",
+		"prettier": "3.5.3",
+		"prettier-plugin-astro": "0.14.1",
+		"prettier-plugin-sh": "0.17.4"
 	}
 }

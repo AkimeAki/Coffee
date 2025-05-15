@@ -3,49 +3,147 @@ import Layout from "@/layouts/Layout.astro";
 import { formatDate } from "@/lib/format-date";
 import { getListAllContents } from "@/lib/microcms";
 import type { Blog } from "@/lib/microcms";
+import { css, cx } from "@/styled-system/css";
+import * as cheerio from "cheerio";
 
 const posts = await getListAllContents<Blog>("blogs");
 ---
 
 <Layout ogType="blog">
-	<main id="card-wrapper">
+	<main
+		class={css`
+			width: 100%;
+			max-width: 814px;
+			margin: 0 auto;
+			padding: 25px 25px 100px 25px;
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr;
+			column-gap: 30px;
+			row-gap: 40px;
+
+			@media screen and (max-width: 700px) {
+				grid-template-columns: 1fr 1fr;
+			}
+
+			@media screen and (max-width: 520px) {
+				grid-template-columns: 1fr;
+			}
+		`}
+	>
 		{
-			posts.map((post) => (
-				<div
-					class="post-card"
-					aria-label={`記事『${post.title}』を読む`}
-					data-bg-src={post.eyecatch ? `${post.eyecatch.url}?fm=webp` : ""}
-				>
-					<div class="post-content-wrapper">
-						<div class="post-content-bg-image-wrapper">
-							<img
-								class="post-content-bg-image"
-								loading="lazy"
-								src={post.eyecatch ? `${post.eyecatch.url}?fm=webp&w=250` : ""}
+			posts.map((post) => {
+				let contents = post.contents;
+				const $ = cheerio.load(contents);
+				$("div").each((_, element) => {
+					$(element).remove();
+				});
+
+				contents = $("body").html() ?? "";
+
+				return (
+					<div
+						class={cx(
+							"post-card",
+							css`
+								position: relative;
+								display: flex;
+								flex-direction: column;
+								gap: 15px;
+								text-decoration: none;
+							`
+						)}
+						aria-label={`記事『${post.title}』を読む`}
+						data-bg-src={post.eyecatch ? `${post.eyecatch.url}?fm=webp` : ""}
+					>
+						<div
+							class={cx(
+								"post-content-wrapper",
+								css`
+									position: relative;
+									padding: 30px;
+									height: 150px;
+									overflow: hidden;
+								`
+							)}
+						>
+							<div
+								class={cx(
+									"post-content-bg-image",
+									css`
+										position: absolute;
+										top: 0;
+										left: 0;
+										width: 100%;
+										height: 100%;
+										user-select: none;
+										pointer-events: none;
+										z-index: -1;
+										opacity: 0;
+										transition-duration: 400ms;
+										transition-property: opacity;
+
+										@media (hover: hover) {
+											.post-card:hover & {
+												opacity: 1;
+											}
+										}
+									`
+								)}
+							>
+								<img
+									class={css`
+										width: 100%;
+										height: 100%;
+										object-fit: cover;
+										filter: blur(5px);
+									`}
+									loading="lazy"
+									src={post.eyecatch ? `${post.eyecatch.url}?fm=webp&w=250` : ""}
+								/>
+							</div>
+							<div
+								class={css`
+									p {
+										font-size: 5px;
+									}
+								`}
+								set:html={contents}
 							/>
 						</div>
-						<div class="post-content" set:html={post.contents} />
+						<div>
+							<h2
+								class={css`
+									font-size: 22px;
+									line-height: 25px;
+								`}
+							>
+								{post.title}
+							</h2>
+							<time
+								class={css`
+									font-size: 16px;
+								`}
+								datetime={post.publishedAt ?? post.createdAt}
+							>
+								{formatDate(post.publishedAt ?? post.createdAt)}
+							</time>
+						</div>
+						<a
+							class={css`
+								position: absolute;
+								top: 0;
+								left: 0;
+								width: 100%;
+								height: 100%;
+							`}
+							href={`/${post.id}`}
+						/>
 					</div>
-					<div>
-						<h2 class="post-title">{post.title}</h2>
-						<time class="post-date" datetime={post.publishedAt ?? post.createdAt}>
-							{formatDate(post.publishedAt ?? post.createdAt)}
-						</time>
-					</div>
-					<a class="post-link" href={`/${post.id}`} />
-				</div>
-			))
+				);
+			})
 		}
 	</main>
 </Layout>
-
-<style>
-	@keyframes rough-notation-dash {
-		to {
-			stroke-dashoffset: 0;
-		}
-	}
-</style>
 
 <script>
 	import { annotate } from "rough-notation";
@@ -86,7 +184,7 @@ const posts = await getListAllContents<Blog>("blogs");
 				postCard.addEventListener("touchstart", loadImage);
 				postCard.addEventListener("mouseover", loadImage);
 				postCard.addEventListener("touchend", () => {
-					const imageWrap = postCard.querySelector<HTMLDivElement>(".post-content-bg-image-wrapper");
+					const imageWrap = postCard.querySelector<HTMLDivElement>(".post-content-bg-image");
 					if (imageWrap !== null) {
 						imageWrap.style.opacity = "";
 					}
@@ -96,100 +194,3 @@ const posts = await getListAllContents<Blog>("blogs");
 		false
 	);
 </script>
-
-<style lang="scss">
-	#card-wrapper {
-		width: 100%;
-		max-width: 814px;
-		margin: 0 auto;
-		padding: 25px 25px 100px 25px;
-		display: grid;
-		grid-template-columns: 1fr 1fr 1fr;
-		column-gap: 30px;
-		row-gap: 40px;
-
-		@media screen and (max-width: 700px) {
-			grid-template-columns: 1fr 1fr;
-		}
-
-		@media screen and (max-width: 520px) {
-			grid-template-columns: 1fr;
-		}
-
-		.post-card {
-			position: relative;
-			display: flex;
-			flex-direction: column;
-			gap: 15px;
-			text-decoration: none;
-
-			&:hover {
-				@media (hover: hover) {
-					.post-content-wrapper {
-						.post-content-bg-image-wrapper {
-							opacity: 1;
-						}
-					}
-				}
-			}
-
-			.post-content-wrapper {
-				position: relative;
-				padding: 30px;
-				height: 150px;
-				overflow: hidden;
-
-				.post-content-bg-image-wrapper {
-					position: absolute;
-					top: 0;
-					left: 0;
-					width: 100%;
-					height: 100%;
-					user-select: none;
-					pointer-events: none;
-				}
-
-				.post-content-bg-image-wrapper {
-					z-index: -1;
-					opacity: 0;
-					transition-duration: 400ms;
-					transition-property: opacity;
-
-					:global(.post-content-bg-image) {
-						width: 100%;
-						height: 100%;
-						object-fit: cover;
-						filter: blur(5px);
-					}
-				}
-
-				.post-content {
-					:global(p) {
-						font-size: 5px;
-					}
-
-					:global(*:not(p)) {
-						display: none !important;
-					}
-				}
-			}
-
-			.post-title {
-				font-size: 22px;
-				line-height: 25px;
-			}
-
-			.post-date {
-				font-size: 16px;
-			}
-
-			.post-link {
-				position: absolute;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-			}
-		}
-	}
-</style>

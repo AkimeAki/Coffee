@@ -1,14 +1,15 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import { css } from "@/styled-system/css";
 ---
 
 <Layout notFound ogType="article" title="404 Not Found." description="ページが見つかりませんでした。">
-	<p id="not-found">404</p>
+	<p
+		class={css`
+			text-align: center;
+			padding: 40px 0;
+		`}
+	>
+		404
+	</p>
 </Layout>
-
-<style>
-	#not-found {
-		text-align: center;
-		padding: 40px 0;
-	}
-</style>

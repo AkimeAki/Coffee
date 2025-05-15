@@ -5,5 +5,7 @@ bun.lockb
 *.png
 *.ttf
 .editorconfig
-Makefile
 _redirects
+.npmrc
+.husky/**/*
+/src/styled-system/**/*

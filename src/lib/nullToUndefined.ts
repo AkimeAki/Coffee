@@ -21,8 +21,6 @@ const nullToUndefined = <T>(object: T): T => {
 		// オブジェクトの場合も再起的に実行
 		if (typeof object[value] === "object") {
 			object[value] = nullToUndefined(object[value]);
-
-			continue;
 		}
 	}
 

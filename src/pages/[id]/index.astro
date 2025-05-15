@@ -3,6 +3,7 @@ import Layout, { serviceTitle } from "@/layouts/Layout.astro";
 import { formatDate } from "@/lib/format-date";
 import { getListAllContents } from "@/lib/microcms";
 import type { Blog } from "@/lib/microcms";
+import { css } from "@/styled-system/css";
 import type { GetStaticPaths } from "astro";
 import * as cheerio from "cheerio";
 
@@ -50,55 +51,516 @@ const schema = {
 	ogType="article"
 	schema={[schema]}
 >
-	<div id="supplement">
-		<p>最後までスクロールすると、<br />背景画像が見れるよ</p>
-	</div>
-	<main id="post-wrapper">
-		<time class="post-date" datetime={blog.publishedAt ?? blog.createdAt}>
+	<main
+		class={css`
+			width: 100%;
+			max-width: 660px;
+			margin: 0 auto;
+			padding: 25px 25px 100px 25px;
+			transition-duration: 500ms;
+			transition-property: opacity;
+
+			body[data-view-image="clear"] & {
+				opacity: 0;
+				user-select: none;
+				pointer-events: none;
+			}
+		`}
+	>
+		<time
+			class={css`
+				font-size: 15px;
+				margin-bottom: 40px;
+				display: block;
+				text-align: right;
+				color: white;
+			`}
+			datetime={blog.publishedAt ?? blog.createdAt}
+		>
 			{formatDate(blog.publishedAt ?? blog.createdAt)}
 		</time>
-		<h2 class="post-title">{blog.title}</h2>
-		<div class="post-content" set:html={contents} />
+		<h2
+			class={css`
+				font-size: 26px;
+				margin-bottom: 50px;
+				color: white;
+			`}
+		>
+			{blog.title}
+		</h2>
+		<div
+			id="post-content"
+			class={css`
+				p {
+					margin-bottom: 35px;
+					font-size: 19px;
+					font-weight: normal;
+					letter-spacing: 0.1em;
+					color: white;
+
+					@media (max-width: 767px) {
+						font-size: 17px;
+					}
+
+					&:last-child {
+						margin-bottom: 0;
+					}
+				}
+
+				hr {
+					opacity: 0;
+
+					margin-bottom: 35px;
+					&:last-child {
+						margin-bottom: 0;
+					}
+				}
+
+				div {
+					user-select: none;
+
+					&:not(:last-child) {
+						margin-bottom: 35px;
+					}
+				}
+
+				a {
+					color: #2d6cff;
+					text-decoration: none;
+					font-weight: bold;
+
+					&:hover {
+						color: #9bb9ff;
+					}
+				}
+
+				.iframely-embed {
+					margin-bottom: 35px;
+					&:last-child {
+						margin-bottom: 0;
+					}
+				}
+			`}
+			set:html={contents}
+		/>
+		<div
+			class={css`
+				display: none;
+				text-align: center;
+				color: white;
+				margin-top: 60px;
+				justify-content: center;
+				flex-direction: column;
+				align-items: center;
+
+				body[data-touch="true"] & {
+					display: flex;
+				}
+
+				body[data-touch="false"] & {
+					@media (max-wdith: 1100px) {
+						display: flex;
+					}
+				}
+			`}
+		>
+			<div
+				id="click-view-image-touch"
+				class={css`
+					span {
+						display: block;
+						text-align: center;
+					}
+				`}
+			>
+				<span>背景画像を見る</span>
+				<span>Click!</span>
+			</div>
+		</div>
 	</main>
-	<div id="bg-image-wrapper">
-		<img id="bg-image" src={blog.eyecatch ? `${blog.eyecatch.url}?fm=webp` : ""} />
+	<div
+		id="filter-image-over"
+		class={css`
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100lvw;
+			height: 100lvh;
+			z-index: -1;
+			overflow: hidden;
+			opacity: 1;
+			transition-duration: 1000ms;
+			transition-property: opacity;
+		`}
+	>
+		<img
+			class={css`
+				object-fit: cover;
+				width: 100%;
+				height: 100%;
+				transform: scale(1.1);
+				filter: blur(7px) brightness(20%);
+			`}
+			src={blog.eyecatch ? `${blog.eyecatch.url}?fm=webp` : ""}
+		/>
 	</div>
-	<div id="curl" data-status="close" data-view="false"></div>
-	<div id="curl-image" data-view="false">
-		<img src={blog.eyecatch ? `${blog.eyecatch.url}?fm=webp` : ""} alt="" />
+	<div
+		id="filter-image"
+		class={css`
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100lvw;
+			height: 100lvh;
+			z-index: -2;
+			overflow: hidden;
+		`}
+	>
+		<img
+			class={css`
+				object-fit: cover;
+				width: 100%;
+				height: 100%;
+				transform: scale(1.1);
+				filter: blur(7px) brightness(20%);
+			`}
+			src={blog.eyecatch ? `${blog.eyecatch.url}?fm=webp` : ""}
+		/>
+	</div>
+	<div
+		id="click-text"
+		class={css`
+			position: fixed;
+			top: 0;
+			left: 0;
+			color: white;
+			font-weight: bold;
+			transform: rotate(45deg);
+			opacity: 0;
+			white-space: nowrap;
+			user-select: none;
+			display: none;
+			pointer-events: none;
+			transition-duration: 500ms;
+			transition-property: opacity;
+		`}
+	>
+		Click!!
+	</div>
+	<script>
+		let mouseX = 0;
+		let mouseY = 0;
+		let currentX = 0;
+		let currentY = 0;
+		let target: EventTarget | null = null;
+		const ease = 0.1;
+		let animating = false;
+		let isFullView = false;
+		let lastUpdateTime = performance.now();
+		const maxFPS = 60;
+		let isViewImageTouch = false;
+
+		function viewClick() {
+			setTimeout(() => {
+				const clickText = document.querySelector<HTMLDivElement>("#click-text");
+
+				if (clickText === null) {
+					return;
+				}
+
+				if (document.body.dataset.touch === "true") {
+					return;
+				}
+
+				const shouldShow = Math.random() < 0.5;
+
+				if (shouldShow && !animating && !isFullView) {
+					clickText.style.display = "block";
+					setTimeout(() => {
+						clickText.style.display = "";
+					}, 500);
+				}
+
+				viewClick();
+			}, 5000);
+		}
+
+		function mouseMove(e: MouseEvent) {
+			mouseX = e.clientX;
+			mouseY = e.clientY;
+			target = e.target;
+		}
+
+		function viewImageTouch(entries: IntersectionObserverEntry[]) {
+			entries.forEach((entry) => {
+				if (entry.isIntersecting) {
+					isViewImageTouch = true;
+				} else {
+					isViewImageTouch = false;
+				}
+			});
+		}
+
+		const observer = new IntersectionObserver(viewImageTouch, {
+			root: null,
+			threshold: 0.1
+		});
+
+		const clickViewImageTouchElement = document.querySelector<HTMLDivElement>("#click-view-image-touch");
+		if (clickViewImageTouchElement !== null) {
+			observer.observe(clickViewImageTouchElement);
+		}
+
+		function updateMask() {
+			const filterImage = document.querySelector<HTMLDivElement>("#filter-image");
+			const filterImageOver = document.querySelector<HTMLDivElement>("#filter-image-over");
+			const clickText = document.querySelector<HTMLDivElement>("#click-text");
+			const postContent = document.querySelector<HTMLDivElement>("#post-content");
+			if (filterImage === null || filterImageOver === null || clickText === null || postContent === null) {
+				return;
+			}
+
+			const now = performance.now();
+			const deltaTime = now - lastUpdateTime;
+
+			requestAnimationFrame(updateMask);
+
+			if (animating) {
+				return;
+			}
+
+			if (isFullView) {
+				return;
+			}
+
+			if (deltaTime < 1000 / maxFPS) {
+				return;
+			}
+
+			lastUpdateTime = now - (deltaTime % (1000 / maxFPS));
+
+			if (document.body.dataset.touch !== "true") {
+				currentX += (mouseX - currentX) * ease;
+				currentY += (mouseY - currentY) * ease;
+			} else {
+				if (isViewImageTouch) {
+					const clickViewImageTouchElement =
+						document.querySelector<HTMLDivElement>("#click-view-image-touch");
+					if (clickViewImageTouchElement !== null) {
+						const rect = clickViewImageTouchElement.getBoundingClientRect();
+
+						console.log(rect.left, rect.top);
+						currentX = rect.left + rect.width / 2;
+						currentY = rect.top + rect.height / 2;
+					}
+				}
+			}
+
+			if (target instanceof HTMLElement && postContent.contains(target)) {
+				mouseLeave();
+			} else {
+				const maskStyle = `radial-gradient(circle 10vw at ${currentX}px ${currentY}px, transparent 0%, black 100%)`;
+				filterImage.style.maskImage = maskStyle;
+				filterImageOver.style.opacity = "0";
+				clickText.style.top = `calc(${currentY}px - 7vw)`;
+				clickText.style.left = `calc(${currentX}px + 7vw)`;
+				if (document.body.dataset.touch === "true") {
+					if (isViewImageTouch) {
+						filterImageOver.style.opacity = "0";
+					} else {
+						filterImageOver.style.opacity = "1";
+					}
+				} else {
+					filterImageOver.style.opacity = "0";
+				}
+			}
+		}
+
+		function viewImage(e: MouseEvent) {
+			if (animating) {
+				return;
+			}
+
+			const button = document.querySelector<HTMLDivElement>("#click-view-image-touch");
+			const filterImageOver = document.querySelector<HTMLDivElement>("#filter-image-over");
+
+			if (filterImageOver === null) {
+				return;
+			}
+
+			if (!isFullView && document.body.dataset.touch === "true") {
+				if (!(e.target instanceof HTMLElement && button !== null && button.contains(e.target))) {
+					return;
+				}
+			}
+
+			const postContent = document.querySelector<HTMLDivElement>("#post-content");
+
+			if (e.target instanceof HTMLElement && postContent !== null && postContent.contains(e.target)) {
+				return;
+			}
+
+			const linkElements = document.querySelectorAll<HTMLAnchorElement>("a");
+			for (const linkElement of linkElements) {
+				if (e.target instanceof HTMLElement && linkElement.contains(e.target)) {
+					return;
+				}
+			}
+
+			animating = true;
+
+			const startTime = performance.now();
+			const duration = 1000;
+			const startRadius = 10;
+			const endRadius = 200;
+
+			function animateExpand(time: number) {
+				const filterImage = document.querySelector<HTMLDivElement>("#filter-image");
+				const filterImageOver = document.querySelector<HTMLDivElement>("#filter-image-over");
+
+				if (filterImage === null || filterImageOver === null) {
+					return;
+				}
+
+				let radius = 0;
+				const elapsed = time - startTime;
+				const progress = Math.min(elapsed / duration, 1);
+				if (isFullView) {
+					radius = endRadius - (endRadius - startRadius) * progress;
+				} else {
+					radius = startRadius + (endRadius - startRadius) * progress;
+				}
+
+				const maskStyle = `radial-gradient(circle ${radius}vw at ${currentX}px ${currentY}px, transparent 0%, black 100%)`;
+				filterImage.style.maskImage = maskStyle;
+				filterImageOver.style.opacity = "0";
+
+				if (progress < 1) {
+					requestAnimationFrame(animateExpand);
+				} else {
+					animating = false;
+					isFullView = !isFullView;
+
+					if (isFullView) {
+						document.body.dataset.viewImage = "clear";
+					} else {
+						document.body.dataset.viewImage = "filter";
+					}
+				}
+			}
+
+			requestAnimationFrame(animateExpand);
+		}
+
+		function mouseLeave() {
+			const filterImageOver = document.querySelector<HTMLDivElement>("#filter-image-over");
+			const clickText = document.querySelector<HTMLDivElement>("#click-text");
+			if (filterImageOver === null || clickText === null) {
+				return;
+			}
+
+			if (animating) {
+				return;
+			}
+
+			if (isFullView) {
+				return;
+			}
+
+			filterImageOver.style.opacity = "1";
+			clickText.style.opacity = "0";
+		}
+
+		function scroll(e: WheelEvent | TouchEvent) {
+			if (isFullView || animating) {
+				e.preventDefault();
+			}
+		}
+
+		updateMask();
+		viewClick();
+
+		document.addEventListener("mousemove", mouseMove);
+		document.addEventListener("mouseleave", mouseLeave);
+		document.addEventListener("click", viewImage);
+		document.addEventListener("wheel", scroll, { passive: false });
+		document.addEventListener("touchmove", scroll, { passive: false });
+
+		document.addEventListener(
+			"astro:after-swap",
+			() => {
+				if (location.pathname === "/") {
+					document.removeEventListener("mousemove", mouseMove);
+					document.removeEventListener("mouseleave", mouseLeave);
+					document.removeEventListener("click", viewImage);
+					document.removeEventListener("wheel", scroll);
+					document.removeEventListener("touchmove", scroll);
+
+					observer.disconnect();
+				} else {
+					updateMask();
+					viewClick();
+					document.addEventListener("mousemove", mouseMove);
+					document.addEventListener("mouseleave", mouseLeave);
+					document.addEventListener("click", viewImage);
+					document.addEventListener("wheel", scroll, { passive: false });
+					document.addEventListener("touchmove", scroll, { passive: false });
+					const clickViewImageTouchElement =
+						document.querySelector<HTMLDivElement>("#click-view-image-touch");
+					if (clickViewImageTouchElement !== null) {
+						observer.observe(clickViewImageTouchElement);
+					}
+				}
+			},
+			false
+		);
+	</script>
+	<div
+		class={css`
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100lvw;
+			height: 100lvh;
+			z-index: -3;
+			overflow: hidden;
+		`}
+	>
+		<img
+			src={blog.eyecatch ? `${blog.eyecatch.url}?fm=webp` : ""}
+			alt=""
+			class={css`
+				object-fit: cover;
+				width: 100%;
+				height: 100%;
+				transform: scale(1.1);
+			`}
+		/>
 	</div>
 </Layout>
-
-<style>
-	@keyframes rough-notation-dash {
-		to {
-			stroke-dashoffset: 0;
-		}
-	}
-</style>
 
 <script>
 	import { annotate } from "rough-notation";
 
-	const annotation = () => {
+	function annotation() {
 		const supplement = document.querySelector<HTMLParagraphElement>("#supplement > p");
 		if (supplement !== null) {
 			const supplementAnnotate = annotate(supplement, { type: "underline", color: "white" });
 			supplementAnnotate.show();
 		}
 
-		const links = document.querySelectorAll<HTMLAnchorElement>(".post-content > p >  a");
+		const links = document.querySelectorAll<HTMLAnchorElement>("#post-content > p >  a");
 		links.forEach((link) => {
-			const linkAnnotate = annotate(link, { type: "highlight", color: "white" });
+			const linkAnnotate = annotate(link, { type: "highlight", color: "white", iterations: 5 });
 			linkAnnotate.show();
 		});
 
-		const hrs = document.querySelectorAll<HTMLHRElement>(".post-content hr");
+		const hrs = document.querySelectorAll<HTMLHRElement>("#post-content hr");
 		hrs.forEach((hr) => {
 			const hrAnnotate = annotate(hr, { type: "strike-through", color: "white" });
 			hrAnnotate.show();
 		});
-	};
+	}
 
 	document.fonts.ready.then(() => {
 		annotation();
@@ -108,10 +570,16 @@ const schema = {
 		"astro:after-swap",
 		() => {
 			annotation();
+		},
+		false
+	);
+</script>
 
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+<script>
+	document.addEventListener(
+		"astro:after-swap",
+		() => {
 			if ((window as any).twttr !== undefined && (window as any).twttr.widgets !== undefined) {
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				(window as any).twttr.widgets.load();
 			}
 		},
@@ -119,281 +587,37 @@ const schema = {
 	);
 </script>
 
-<style lang="scss">
-	:global(#title) {
+<style lang="scss" is:global>
+	#header-title {
 		color: white;
 	}
 
-	:global(#description) {
-		color: white;
+	#sns-links {
+		a {
+			background-color: white;
+		}
 	}
 
-	:global(#wrapper) {
-		position: relative;
+	header {
+		transition-duration: 500ms;
+		transition-property: opacity;
 
-		:global(#sns-link) {
-			:global(a) {
-				background-color: white !important;
-			}
+		body[data-view-image="clear"] & {
+			opacity: 0;
+			user-select: none;
+			pointer-events: none;
 		}
 	}
 
 	#supplement {
-		text-align: center;
-
-		p {
-			color: white;
-			font-size: 20px;
-			display: inline-block;
-		}
-
-		br {
-			display: none;
-			@media screen and (max-width: 650px) {
-				display: block;
-			}
-		}
-	}
-
-	#bg-image-wrapper {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		z-index: -1;
-		overflow: hidden;
-
-		#bg-image {
-			object-fit: cover;
-			width: 100%;
-			height: 100%;
-			transform: scale(1.1);
-			filter: blur(7px) brightness(45%);
-		}
-	}
-
-	#post-wrapper {
-		width: 100%;
-		max-width: 660px;
-		margin: 0 auto;
-		padding: 25px 25px 100px 25px;
-
-		.post-title {
-			font-size: 26px;
-			margin-bottom: 50px;
-			color: white;
-		}
-
-		.post-content {
-			:global(p) {
-				margin-bottom: 35px;
-				font-size: 18px;
-				font-weight: normal;
-				letter-spacing: 0.1em;
-				color: white;
-
-				@media (max-width: 767px) {
-					font-size: 16px;
-				}
-
-				&:last-child {
-					margin-bottom: 0;
-				}
-			}
-
-			:global(hr) {
-				opacity: 0;
-
-				margin-bottom: 35px;
-				&:last-child {
-					margin-bottom: 0;
-				}
-			}
-
-			:global(a) {
-				color: #2d6cff;
-				text-decoration: none;
-
-				&:hover {
-					color: #9bb9ff;
-				}
-			}
-
-			:global(.iframely-embed) {
-				margin-bottom: 35px;
-				&:last-child {
-					margin-bottom: 0;
-				}
-			}
-		}
-
-		.post-date {
-			font-size: 15px;
-			margin-bottom: 40px;
-			display: block;
-			text-align: right;
-			color: white;
-		}
-
-		.post-link {
-			position: fixed;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-		}
-	}
-
-	#curl {
-		position: absolute;
-		bottom: 0;
-		right: 0;
-		width: 0;
-		height: 0;
-		cursor: pointer;
-		background: linear-gradient(
-			315deg,
-			transparent,
-			transparent 45%,
-			transparent 50%,
-			#aaa 50%,
-			#bbb 56%,
-			#ccc 62%,
-			#f3f3f3 80%,
-			#fff 100%
-		);
+		color: white;
 		transition-duration: 500ms;
-		transition-timing-function: ease-in-out;
-		transition-property: width, height;
-		z-index: 2;
+		transition-property: opacity;
 
-		&[data-view="true"] {
-			width: 50px;
-			height: 50px;
-		}
-	}
-
-	#curl-image {
-		position: absolute;
-		bottom: 0;
-		right: 0;
-		width: 0;
-		height: 0;
-		max-width: 100%;
-		max-height: 100svh;
-		transition-duration: 500ms;
-		transition-timing-function: ease-in-out;
-		transition-property: width, height;
-		z-index: 1;
-		overflow: hidden;
-
-		&[data-view="true"] {
-			width: 50px;
-			height: 50px;
-		}
-
-		img {
-			position: absolute;
-			bottom: 0;
-			right: 0;
-			width: 100svw;
-			height: 100svh;
-			object-fit: cover;
-			transform: scale(1.1);
+		body[data-view-image="clear"] & {
+			opacity: 0;
+			user-select: none;
+			pointer-events: none;
 		}
 	}
 </style>
-
-<script>
-	const curlView = () => {
-		const wrapper = document.querySelector<HTMLElement>("#wrapper");
-		const curl = document.querySelector<HTMLElement>("#curl");
-		const curlImage = document.querySelector<HTMLElement>("#curl-image");
-		if (wrapper !== null && curl !== null && curlImage !== null) {
-			curl.style.bottom = -1 * wrapper.scrollTop + "px";
-			curlImage.style.bottom = -1 * wrapper.scrollTop + "px";
-
-			const scrollBottom = wrapper.scrollHeight - wrapper.offsetHeight - wrapper.scrollTop;
-			if (scrollBottom < 10) {
-				curl.dataset.view = "true";
-				curlImage.dataset.view = "true";
-			} else {
-				curl.dataset.view = "false";
-				curlImage.dataset.view = "false";
-			}
-		}
-	};
-
-	let size = 0;
-	const resizeCurl = () => {
-		const curl = document.querySelector<HTMLElement>("#curl");
-		const curlImage = document.querySelector<HTMLElement>("#curl-image");
-
-		if (curl !== null && curlImage !== null) {
-			size = Math.max(window.innerWidth, window.innerHeight) * 2;
-
-			if (curl.dataset.status === "open") {
-				curl.style.width = size + "px";
-				curl.style.height = size + "px";
-
-				curlImage.style.width = size + "px";
-				curlImage.style.height = size + "px";
-			}
-		}
-	};
-
-	window.addEventListener(
-		"resize",
-		() => {
-			resizeCurl();
-			curlView();
-		},
-		false
-	);
-	resizeCurl();
-
-	const curlToggle = () => {
-		const curl = document.querySelector<HTMLElement>("#curl");
-		const curlImage = document.querySelector<HTMLElement>("#curl-image");
-		const wrapper = document.querySelector<HTMLElement>("#wrapper");
-
-		if (wrapper !== null && curl !== null && curlImage !== null) {
-			curl.addEventListener("click", () => {
-				if (curl.dataset.status === "close") {
-					curl.dataset.status = "open";
-					document.body.style.overflowY = "scroll";
-					wrapper.style.overflow = "hidden";
-
-					curl.style.width = size + "px";
-					curl.style.height = size + "px";
-					curlImage.style.width = size + "px";
-					curlImage.style.height = size + "px";
-				} else {
-					curl.dataset.status = "close";
-					document.body.style.overflowY = "";
-					wrapper.style.overflow = "";
-
-					curl.style.width = "";
-					curl.style.height = "";
-					curlImage.style.width = "";
-					curlImage.style.height = "";
-				}
-			});
-
-			wrapper.addEventListener("scroll", curlView);
-		}
-	};
-
-	document.addEventListener(
-		"astro:after-swap",
-		() => {
-			curlToggle();
-			curlView();
-		},
-		false
-	);
-
-	curlToggle();
-	curlView();
-</script>

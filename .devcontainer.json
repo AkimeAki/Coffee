@@ -1,0 +1,29 @@
+{
+	"dockerComposeFile": "./compose.yml",
+	"service": "app",
+	"workspaceFolder": "/app/",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"astro-build.astro-vscode",
+				"esbenp.prettier-vscode",
+				"EditorConfig.EditorConfig",
+				"biomejs.biome"
+			],
+			"settings": {
+				"prettier.documentSelectors": ["**/*.astro"],
+				"npm.packageManager": "npm",
+				"editor.formatOnSave": true,
+				"editor.defaultFormatter": "esbenp.prettier-vscode",
+				"files.readonlyInclude": {
+					"node_modules/**/*": true,
+					".git/**/*": true,
+					"dist/**/*": true
+				},
+				"biome.enabled": true,
+				"biome.lspBin": "node_modules/@biomejs/cli-linux-x64/biome"
+			}
+		}
+	},
+	"shutdownAction": "stopCompose"
+}
