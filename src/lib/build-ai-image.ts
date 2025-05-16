@@ -44,15 +44,18 @@ export default function (): AstroIntegration {
 								messages: [
 									{
 										role: "user",
-										content: `次の文章はブログ記事の本文です。内容を70文字に日本語で要約してください。文章の口調は本文に合わせてください。要約以外の内容は出力しないでください。\n\n${blogContent}`
+										content: `次の文章はブログ記事の本文です。内容を70文字に日本語で要約して、「というお話らしいよ by AI」で締めくくってください。\n\n${blogContent}`
 									}
 								],
 								stream: false
 							});
 
 							const description = descriptionResponse.choices[0]?.message.content
-								? `${descriptionResponse.choices[0]?.message.content}というお話らしいよ by AI`
+								? descriptionResponse.choices[0]?.message.content
 								: "";
+
+							logger.info("Ai要約生成完了");
+							logger.info("microCMSに要約を設定中");
 
 							await client.update({
 								endpoint: "blogs",
@@ -61,14 +64,15 @@ export default function (): AstroIntegration {
 									description
 								}
 							});
+
+							logger.info("microCMSに要約を設定完了");
 						}
 
 						if (post.eyecatch === undefined) {
-							logger.info("以下のIDについて画像生成を行います。");
 							logger.info(post.id);
-							logger.info("AI画像生成中");
+							logger.info(`AI画像生成中 ID: ${post.id}`);
 
-							const prompt = `次のブログの文章からイメージできるテーマをいくつか考え、そのテーマに沿ってテキストを含めない少し幻想的なイラストを作ってください。\n\n"${blogContent}"\n\n: `;
+							const prompt = `次のブログの文章からイメージできるテーマをいくつか考え、そのテーマに沿ってテキストを含めない少し幻想的なイラストを、透過部分は無しで作ってください。\n\n"${blogContent}"\n\n: `;
 
 							const imageResponse = await openai.images.generate({
 								model: "gpt-image-1",
@@ -88,6 +92,9 @@ export default function (): AstroIntegration {
 
 							const blob = new Blob([imageBytes], { type: "image/png" });
 
+							logger.info("AI画像の生成完了");
+							logger.info("microCMSにアップロード中");
+
 							const { url } = await managementClient.uploadMedia({
 								data: blob,
 								name: "image.png"
@@ -101,7 +108,7 @@ export default function (): AstroIntegration {
 								}
 							});
 
-							logger.info("AI画像の生成完了");
+							logger.info("microCMSにアップロード完了");
 						}
 					}
 				} catch (e) {
