@@ -34,10 +34,7 @@ export default function (): AstroIntegration {
 						const blogContent = $.text();
 
 						if (post.description === undefined || post.description === "") {
-							logger.info("以下のIDについて要約生成を行います。");
-							logger.info(post.id);
-
-							logger.info("Ai要約生成中");
+							logger.info(`AI要約生成中 ID: ${post.id}`);
 
 							const descriptionResponse = await openai.chat.completions.create({
 								model: "gpt-4.1-mini",
@@ -54,7 +51,7 @@ export default function (): AstroIntegration {
 								? descriptionResponse.choices[0]?.message.content
 								: "";
 
-							logger.info("Ai要約生成完了");
+							logger.info("AI要約生成完了");
 							logger.info("microCMSに要約を設定中");
 
 							await client.update({
