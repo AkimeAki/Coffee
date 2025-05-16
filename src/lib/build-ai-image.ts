@@ -40,7 +40,7 @@ export default function (): AstroIntegration {
 							logger.info("Ai要約生成中");
 
 							const descriptionResponse = await openai.chat.completions.create({
-								model: "gpt-4o-mini",
+								model: "gpt-4.1-mini",
 								messages: [
 									{
 										role: "user",
