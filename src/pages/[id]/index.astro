@@ -231,6 +231,10 @@ const schema = {
 				filter: blur(7px) brightness(20%);
 				user-select: none;
 				pointer-events: none;
+
+				@media (max-width: 767px) {
+					filter: blur(7px) brightness(30%);
+				}
 			`}
 			src={blog.eyecatch ? `${blog.eyecatch.url}?fm=webp` : ""}
 		/>
@@ -256,6 +260,10 @@ const schema = {
 				filter: blur(7px) brightness(20%);
 				user-select: none;
 				pointer-events: none;
+
+				@media (max-width: 767px) {
+					filter: blur(7px) brightness(30%);
+				}
 			`}
 			src={blog.eyecatch ? `${blog.eyecatch.url}?fm=webp` : ""}
 		/>
