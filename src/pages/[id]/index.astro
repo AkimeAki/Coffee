@@ -619,11 +619,19 @@ const schema = {
 		(window as any).twttr.widgets.load();
 	}
 
+	if ((window as any).iframely !== undefined) {
+		(window as any).iframely.load();
+	}
+
 	document.addEventListener(
 		"astro:after-swap",
 		() => {
 			if ((window as any).twttr?.widgets !== undefined) {
 				(window as any).twttr.widgets.load();
+			}
+
+			if ((window as any).iframely !== undefined) {
+				(window as any).iframely.load();
 			}
 		},
 		false
