@@ -38,6 +38,14 @@ const posts = await getListAllContents<Blog>("blogs");
 					$(element).remove();
 				});
 
+				$("blockquote").each((_, element) => {
+					$(element).remove();
+				});
+
+				$("script").each((_, element) => {
+					$(element).remove();
+				});
+
 				contents = $("body").html() ?? "";
 
 				return (
@@ -105,8 +113,12 @@ const posts = await getListAllContents<Blog>("blogs");
 							</div>
 							<div
 								class={css`
-									p {
+									* {
 										font-size: 5px;
+									}
+
+									ul {
+										padding-inline-start: 12px;
 									}
 								`}
 								set:html={contents}
