@@ -485,7 +485,7 @@ const schema = {
 					radius = startRadius + (endRadius - startRadius) * progress;
 				}
 
-				const maskStyle = `radial-gradient(circle max(${radius}vw, 130px) at ${currentX}px ${currentY}px, transparent 0%, black 100%)`;
+				const maskStyle = `radial-gradient(circle max(${radius}vw, ${radius}vh, 130px) at ${currentX}px ${currentY}px, transparent 0%, black 100%)`;
 				filterImage.style.maskImage = maskStyle;
 				filterImageOver.style.opacity = "0";
 
