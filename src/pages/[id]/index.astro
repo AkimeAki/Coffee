@@ -28,13 +28,18 @@ $('script[src="//cdn.iframe.ly/embed.js"]').each((_, element) => {
 });
 
 contents = $("body").html() ?? "";
+const description = `${$("body")
+	.text()
+	.replace(/\r?\n|\r/g, "")
+	.trim()
+	.slice(0, 70)}...`;
 
 const schema = {
 	"@context": "https://schema.org",
 	"@type": "BlogPosting",
 	name: `${blog.title} | ${serviceTitle} - AIが背景画像を生成するブログ`,
 	alternateName: `${blog.title} | ${serviceTitle}`,
-	description: blog.description ?? "",
+	description: description,
 	url: `${Astro.site}${blog.id}`,
 	image: {
 		"@type": "ImageObject",
@@ -46,7 +51,7 @@ const schema = {
 
 <Layout
 	title={blog.title}
-	description={blog.description ?? ""}
+	description={description}
 	ogImage={blog.eyecatch ? `${blog.eyecatch.url}?fm=webp` : undefined}
 	ogType="article"
 	schema={[schema]}

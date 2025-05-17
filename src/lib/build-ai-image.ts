@@ -33,37 +33,37 @@ export default function (): AstroIntegration {
 						const $ = cheerio.load(post.contents);
 						const blogContent = $.text();
 
-						if (post.description === undefined || post.description === "") {
-							logger.info(`AI要約生成中 ID: ${post.id}`);
+						// if (post.description === undefined || post.description === "") {
+						// 	logger.info(`AI要約生成中 ID: ${post.id}`);
 
-							const descriptionResponse = await openai.chat.completions.create({
-								model: "gpt-4.1-mini",
-								messages: [
-									{
-										role: "user",
-										content: `次の文章はブログ記事の本文です。内容を70文字に日本語で要約して、「というお話らしいよ by AI」で締めくくってください。\n\n${blogContent}`
-									}
-								],
-								stream: false
-							});
+						// 	const descriptionResponse = await openai.chat.completions.create({
+						// 		model: "gpt-4.1-mini",
+						// 		messages: [
+						// 			{
+						// 				role: "user",
+						// 				content: `次の文章はブログ記事の本文です。内容を70文字に日本語で要約して、「というお話らしいよ by AI」で締めくくってください。\n\n${blogContent}`
+						// 			}
+						// 		],
+						// 		stream: false
+						// 	});
 
-							const description = descriptionResponse.choices[0]?.message.content
-								? descriptionResponse.choices[0]?.message.content
-								: "";
+						// 	const description = descriptionResponse.choices[0]?.message.content
+						// 		? descriptionResponse.choices[0]?.message.content
+						// 		: "";
 
-							logger.info("AI要約生成完了");
-							logger.info("microCMSに要約を設定中");
+						// 	logger.info("AI要約生成完了");
+						// 	logger.info("microCMSに要約を設定中");
 
-							await client.update({
-								endpoint: "blogs",
-								contentId: post.id,
-								content: {
-									description
-								}
-							});
+						// 	await client.update({
+						// 		endpoint: "blogs",
+						// 		contentId: post.id,
+						// 		content: {
+						// 			description
+						// 		}
+						// 	});
 
-							logger.info("microCMSに要約を設定完了");
-						}
+						// 	logger.info("microCMSに要約を設定完了");
+						// }
 
 						if (post.eyecatch === undefined) {
 							logger.info(post.id);
