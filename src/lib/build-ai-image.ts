@@ -69,7 +69,7 @@ export default function (): AstroIntegration {
 							logger.info(post.id);
 							logger.info(`AI画像生成中 ID: ${post.id}`);
 
-							const prompt = `次のブログの文章からイメージできるテーマをいくつか考え、そのテーマに沿ってテキストを含めない少し幻想的なイラストを、透過部分は無しで作ってください。\n\n"${blogContent}"\n\n: `;
+							const prompt = `次のブログの文章を元に、この内容の概念を表した幻想的で美しいイラストを作ってください。テキストは含めず、透過部分も無しで作成してください。\n\n"${blogContent}"\n\n: `;
 
 							const imageResponse = await openai.images.generate({
 								model: "gpt-image-1",
