@@ -118,7 +118,9 @@ const posts = await getListAllContents<Blog>("blogs");
 									}
 
 									ul {
-										padding-inline-start: 12px;
+										ul {
+											padding-inline-start: 12px;
+										}
 									}
 								`}
 								set:html={contents}
