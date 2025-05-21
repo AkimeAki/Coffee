@@ -539,35 +539,6 @@ const schema = {
 		document.addEventListener("click", viewImage);
 		document.addEventListener("wheel", scroll, { passive: false });
 		document.addEventListener("touchmove", scroll, { passive: false });
-
-		document.addEventListener(
-			"astro:after-swap",
-			() => {
-				if (location.pathname === "/") {
-					document.removeEventListener("mousemove", mouseMove);
-					document.removeEventListener("mouseleave", mouseLeave);
-					document.removeEventListener("click", viewImage);
-					document.removeEventListener("wheel", scroll);
-					document.removeEventListener("touchmove", scroll);
-
-					observer.disconnect();
-				} else {
-					updateMask();
-					viewClick();
-					document.addEventListener("mousemove", mouseMove);
-					document.addEventListener("mouseleave", mouseLeave);
-					document.addEventListener("click", viewImage);
-					document.addEventListener("wheel", scroll, { passive: false });
-					document.addEventListener("touchmove", scroll, { passive: false });
-					const clickViewImageTouchElement =
-						document.querySelector<HTMLDivElement>("#click-view-image-touch");
-					if (clickViewImageTouchElement !== null) {
-						observer.observe(clickViewImageTouchElement);
-					}
-				}
-			},
-			false
-		);
 	</script>
 	<div
 		class={css`
@@ -598,7 +569,7 @@ const schema = {
 <script>
 	import { annotate } from "rough-notation";
 
-	function annotation() {
+	document.fonts.ready.then(() => {
 		const supplement = document.querySelector<HTMLParagraphElement>("#supplement > p");
 		if (supplement !== null) {
 			const supplementAnnotate = annotate(supplement, { type: "underline", color: "white" });
@@ -616,19 +587,7 @@ const schema = {
 			const hrAnnotate = annotate(hr, { type: "strike-through", color: "white" });
 			hrAnnotate.show();
 		});
-	}
-
-	document.fonts.ready.then(() => {
-		annotation();
 	});
-
-	document.addEventListener(
-		"astro:after-swap",
-		() => {
-			annotation();
-		},
-		false
-	);
 </script>
 
 <script>
@@ -639,20 +598,6 @@ const schema = {
 	if ((window as any).iframely !== undefined) {
 		(window as any).iframely.load();
 	}
-
-	document.addEventListener(
-		"astro:after-swap",
-		() => {
-			if ((window as any).twttr?.widgets !== undefined) {
-				(window as any).twttr.widgets.load();
-			}
-
-			if ((window as any).iframely !== undefined) {
-				(window as any).iframely.load();
-			}
-		},
-		false
-	);
 </script>
 
 <style lang="scss" is:global>

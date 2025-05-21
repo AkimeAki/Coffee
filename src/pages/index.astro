@@ -164,49 +164,35 @@ const posts = await getListAllContents<Blog>("blogs");
 <script>
 	import { annotate } from "rough-notation";
 
-	const annotation = () => {
+	document.fonts.ready.then(() => {
 		const postCards = document.querySelectorAll<HTMLDivElement>(".post-content-wrapper");
 		postCards.forEach((postCard) => {
 			const postCardAnnotate = annotate(postCard, { type: "box", color: "#ffd9c6" });
 			postCardAnnotate.show();
 		});
-	};
-
-	document.fonts.ready.then(() => {
-		annotation();
-	});
-
-	document.addEventListener("astro:after-swap", () => {
-		annotation();
 	});
 </script>
 
 <script>
-	document.addEventListener(
-		"astro:page-load",
-		() => {
-			const postCards = document.querySelectorAll<HTMLAnchorElement>(".post-card");
-			postCards.forEach((postCard) => {
-				const loadImage = () => {
-					const src = postCard.dataset.bgSrc;
-					if (src === undefined) {
-						return;
-					}
+	const postCards = document.querySelectorAll<HTMLAnchorElement>(".post-card");
+	postCards.forEach((postCard) => {
+		const loadImage = () => {
+			const src = postCard.dataset.bgSrc;
+			if (src === undefined) {
+				return;
+			}
 
-					const image = new Image();
-					image.src = src;
-				};
+			const image = new Image();
+			image.src = src;
+		};
 
-				postCard.addEventListener("touchstart", loadImage);
-				postCard.addEventListener("mouseover", loadImage);
-				postCard.addEventListener("touchend", () => {
-					const imageWrap = postCard.querySelector<HTMLDivElement>(".post-content-bg-image");
-					if (imageWrap !== null) {
-						imageWrap.style.opacity = "";
-					}
-				});
-			});
-		},
-		false
-	);
+		postCard.addEventListener("touchstart", loadImage);
+		postCard.addEventListener("mouseover", loadImage);
+		postCard.addEventListener("touchend", () => {
+			const imageWrap = postCard.querySelector<HTMLDivElement>(".post-content-bg-image");
+			if (imageWrap !== null) {
+				imageWrap.style.opacity = "";
+			}
+		});
+	});
 </script>

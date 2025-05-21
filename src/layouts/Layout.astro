@@ -1,5 +1,4 @@
 ---
-import { ClientRouter } from "astro:transitions";
 import "@akimeaki/reset-css";
 import "@/global.scss";
 import "@/panda.css";
@@ -77,7 +76,6 @@ const schemaList = [...schema, baseSchema];
 		<title>{pageTitle} - AIが背景画像を生成するブログ</title>
 		<link rel="sitemap" href="/sitemap-index.xml" />
 		<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-		<ClientRouter />
 	</head>
 	<body>
 		<!-- Google Tag Manager (noscript) -->
@@ -173,14 +171,6 @@ const schemaList = [...schema, baseSchema];
 	</body>
 </html>
 
-<style>
-	@keyframes rough-notation-dash {
-		to {
-			stroke-dashoffset: 0;
-		}
-	}
-</style>
-
 <script>
 	const isTouchDevice = (): boolean => {
 		if (typeof window !== "undefined") {
@@ -216,16 +206,4 @@ const schemaList = [...schema, baseSchema];
 
 	window.addEventListener("touchstart", touched, false);
 	window.addEventListener("pointermove", move, false);
-
-	document.addEventListener(
-		"astro:after-swap",
-		() => {
-			if (isTouchDevice()) {
-				document.body.dataset.touch = "true";
-			} else {
-				document.body.dataset.touch = "false";
-			}
-		},
-		false
-	);
 </script>

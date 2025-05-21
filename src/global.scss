@@ -4,6 +4,10 @@
 	font-display: block;
 }
 
+@view-transition {
+	navigation: auto;
+}
+
 @layer base {
 	body {
 		font-family: "きろ字";
