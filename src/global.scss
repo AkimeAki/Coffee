@@ -8,6 +8,12 @@
 	navigation: auto;
 }
 
+
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation-duration: 700ms;
+}
+
 @layer base {
 	body {
 		font-family: "きろ字";
