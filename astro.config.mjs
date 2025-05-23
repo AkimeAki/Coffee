@@ -10,6 +10,9 @@ export default defineConfig({
 	experimental: {},
 	site: "https://coffee.shikiiro.net",
 	trailingSlash: "never",
+	prefetch: {
+		prefetchAll: true
+	},
 	integrations: [sitemap(), buildAiImage()],
 	build: {
 		format: "file"
